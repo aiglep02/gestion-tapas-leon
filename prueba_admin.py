@@ -12,7 +12,7 @@ print(f"Tapa insertada con ID: {tapa_id}")
 admin.actualizar_tapa(tapa_id, stock=10, precio=3.50)
 print("Tapa actualizada.")
 
-# Listar tapas
+# Listar las tapas
 for tapa in admin.obtener_tapas():
     print(f"{tapa['id']}: {tapa['nombre']} - {tapa['precio']}€ ({tapa['stock']} en stock)")
 

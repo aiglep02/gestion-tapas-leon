@@ -34,7 +34,7 @@ class ControladorAdministrador:
             valores.append(stock)
 
         if not campos:
-            return 0  # Nada que actualizar
+            return 0  # No hay nada que actualizar
 
         sql += ", ".join(campos) + " WHERE id = %s"
         valores.append(tapa_id)
