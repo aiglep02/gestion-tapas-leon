@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 from vistas.login import Ui_Dialog  # Asegúrate de que login.ui fue convertido a login.py
+from interfaces.VentanaAdminUsuarios import VentanaAdminUsuarios
 
 class VentanaLogin(QDialog):
     def __init__(self):
@@ -43,8 +44,13 @@ class VentanaLogin(QDialog):
     def iniciar_sesion(self):
         usuario = self.ui.lineEdit.text()
         contrasena = self.ui.lineEdit_2.text()
+
         if usuario == "admin" and contrasena == "1234":
             self.ui.labelError.setText("Inicio correcto.")
+            self.close()
+
+            self.ventana_admin = VentanaAdminUsuarios()
+            self.ventana_admin.show()
         else:
             self.ui.labelError.setText("Usuario o contraseña incorrectos.")
 
