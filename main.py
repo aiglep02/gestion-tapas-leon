@@ -3,11 +3,12 @@ import os
 from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-from vistas.login import Ui_Dialog  # Asegúrate de que login.ui fue convertido a login.py
+from vistas.login import Ui_Dialog
 from vistas.ventana_cliente import VentanaClienteRegistrado
 from vistas.ventana_admin import VentanaAdmin
 from vistas.ventana_empleado import VentanaEmpleado
 from vistas.ventana_invitado import VentanaInvitado
+# from interfaces.VentanaAdminUsuarios import VentanaAdminUsuarios  # Solo si lo necesitas
 
 class VentanaLogin(QDialog):
     def __init__(self):
@@ -23,11 +24,10 @@ class VentanaLogin(QDialog):
         else:
             print(f"[WARNING] No se encontró el archivo de estilo: {ruta_estilo}")
 
-        # 🖼️ Configuración del logo (centrado, no achatado)
+        # 🖼️ Configuración del logo
         logo = self.ui.logo
         logo.setAlignment(Qt.AlignCenter)
         logo.setScaledContents(False)
-
         ruta_logo = os.path.join("interfaces", "logoGestionTapas.jpg")
         if os.path.exists(ruta_logo):
             pixmap = QPixmap(ruta_logo)
@@ -36,10 +36,8 @@ class VentanaLogin(QDialog):
         else:
             print(f"[ERROR] No se encontró el logo en: {ruta_logo}")
 
-        # Ajustes de tamaño de la ventana
         self.setFixedSize(500, 600)
 
-        # Conectar botones
         self.ui.btnLogin.clicked.connect(self.iniciar_sesion)
         self.ui.botonRegistro.clicked.connect(self.registrarse)
         self.ui.botonAnonimo.clicked.connect(self.entrar_anonimo)
@@ -47,8 +45,6 @@ class VentanaLogin(QDialog):
     def iniciar_sesion(self):
         from modelos.ConexionMYSQL import conectar
         from controladores.ControladorLogin import ControladorLogin
-        from vistas.ventana_cliente import VentanaClienteRegistrado
-        from vistas.ventana_admin import VentanaAdmin
 
         email = self.ui.lineEdit.text()
         contrasena = self.ui.lineEdit_2.text()
@@ -61,19 +57,19 @@ class VentanaLogin(QDialog):
             if usuario:
                 rol = usuario["rol"]
                 self.ui.labelError.setText(f"Inicio correcto. Rol: {rol}")
-                self.close()  # Cierra login si es correcto
+                self.close()
 
                 if rol == "cliente":
                     self.ventana = VentanaClienteRegistrado()
-                    self.ventana.show()
                 elif rol == "admin":
                     self.ventana = VentanaAdmin()
-                    self.ventana.show()
                 elif rol == "empleado":
                     self.ventana = VentanaEmpleado()
-                    self.ventana.show()
                 else:
                     self.ui.labelError.setText("Rol no reconocido.")
+                    return
+
+                self.ventana.show()
             else:
                 self.ui.labelError.setText("Usuario o contraseña incorrectos.")
         except Exception as e:
@@ -88,7 +84,7 @@ class VentanaLogin(QDialog):
         self.close()
         self.ventana = VentanaInvitado()
         self.ventana.show()
-        
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     ventana = VentanaLogin()
