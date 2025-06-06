@@ -19,3 +19,6 @@ class ConexionMYSQL:
             password='bdpass',
             database=database
         )
+
+def conectar():
+    return ConexionMYSQL().conexion

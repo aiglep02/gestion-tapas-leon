@@ -52,7 +52,7 @@ class VentanaRegistro(QDialog):
             conn = conectar()
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO usuarios (nombre, email, contraseña, rol)
+                INSERT INTO Usuario (nombre, email, contraseña, rol)
                 VALUES (%s, %s, %s, %s)
             """, (nombre, email, contrasena, rol))
             conn.commit()

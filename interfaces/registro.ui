@@ -115,17 +115,17 @@
        <widget class="QComboBox" name="comboRol">
         <item>
          <property name="text">
-          <string>Clliente</string>
+          <string>Cliente</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Administrador</string>
+          <string>admin</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Camarero</string>
+          <string>empleado</string>
          </property>
         </item>
        </widget>
