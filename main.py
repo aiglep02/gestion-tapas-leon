@@ -4,6 +4,10 @@ from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 from vistas.login import Ui_Dialog  # Asegúrate de que login.ui fue convertido a login.py
+from vistas.ventana_cliente import VentanaClienteRegistrado
+from vistas.ventana_admin import VentanaAdmin
+from vistas.ventana_empleado import VentanaEmpleado
+from vistas.ventana_invitado import VentanaInvitado
 
 class VentanaLogin(QDialog):
     def __init__(self):
@@ -41,12 +45,39 @@ class VentanaLogin(QDialog):
         self.ui.botonAnonimo.clicked.connect(self.entrar_anonimo)
 
     def iniciar_sesion(self):
-        usuario = self.ui.lineEdit.text()
+        from modelos.ConexionMYSQL import conectar
+        from controladores.ControladorLogin import ControladorLogin
+        from vistas.ventana_cliente import VentanaClienteRegistrado
+        from vistas.ventana_admin import VentanaAdmin
+
+        email = self.ui.lineEdit.text()
         contrasena = self.ui.lineEdit_2.text()
-        if usuario == "admin" and contrasena == "1234":
-            self.ui.labelError.setText("Inicio correcto.")
-        else:
-            self.ui.labelError.setText("Usuario o contraseña incorrectos.")
+
+        try:
+            conn = conectar()
+            login_ctrl = ControladorLogin(conn)
+            usuario = login_ctrl.verificar_credenciales(email, contrasena)
+
+            if usuario:
+                rol = usuario["rol"]
+                self.ui.labelError.setText(f"Inicio correcto. Rol: {rol}")
+                self.close()  # Cierra login si es correcto
+
+                if rol == "cliente":
+                    self.ventana = VentanaClienteRegistrado()
+                    self.ventana.show()
+                elif rol == "admin":
+                    self.ventana = VentanaAdmin()
+                    self.ventana.show()
+                elif rol == "empleado":
+                    self.ventana = VentanaEmpleado()
+                    self.ventana.show()
+                else:
+                    self.ui.labelError.setText("Rol no reconocido.")
+            else:
+                self.ui.labelError.setText("Usuario o contraseña incorrectos.")
+        except Exception as e:
+            self.ui.labelError.setText(f"Error: {str(e)}")
 
     def registrarse(self):
         from controladores.controladorRegistro import VentanaRegistro
@@ -54,8 +85,10 @@ class VentanaLogin(QDialog):
         registro.exec_()
 
     def entrar_anonimo(self):
-        self.ui.labelError.setText("Entraste como invitado.")
-
+        self.close()
+        self.ventana = VentanaInvitado()
+        self.ventana.show()
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     ventana = VentanaLogin()

@@ -56,9 +56,9 @@ class VentanaRegistro(QDialog):
                 VALUES (%s, %s, %s, %s)
             """, (nombre, email, contrasena, rol))
             conn.commit()
-            self.ui.lblError.setText("✅ Usuario registrado correctamente.")
+            self.ui.lblError.setText("Usuario registrado correctamente.")
             conn.close()  # solo se ejecuta si la conexión fue exitosa
         except mysql.connector.IntegrityError:
-            self.ui.lblError.setText("❌ Ese email ya está registrado.")
+            self.ui.lblError.setText("Ese email ya está registrado.")
         except Exception as e:
             self.ui.lblError.setText(f"⚠️ Error: {str(e)}")
