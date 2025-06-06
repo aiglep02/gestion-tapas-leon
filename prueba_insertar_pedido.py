@@ -24,7 +24,7 @@ try:
 
     cursor.execute("SELECT LAST_INSERT_ID()")
     usuario_id = cursor.fetchone()[0]
-    print(f"✅ Usuario insertado con ID: {usuario_id}")
+    print(f"Usuario insertado con ID: {usuario_id}")
 
     # 3. Crear pedido
     controlador = ControladorPedido(conexion)
@@ -32,14 +32,14 @@ try:
     pedido_id = controlador.crearPedido(usuario_id, tapas)
     conexion.commit()
 
-    print(f"✅ Pedido insertado con ID: {pedido_id}")
+    print(f"Pedido insertado con ID: {pedido_id}")
 
 except Exception as e:
-    print("❌ Error:", e)
+    print("Error:", e)
 
 finally:
     conexion.close()
-    print("🔒 Conexión cerrada.")
+    print("Conexión cerrada.")
 
 
 
