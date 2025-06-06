@@ -12,7 +12,7 @@ try:
     if tapas_existentes < 2:
         cursor.execute("INSERT INTO tapa (id, nombre, descripcion, precio, stock) VALUES (1, 'Tortilla', 'Con cebolla', 2.5, 10)")
         cursor.execute("INSERT INTO tapa (id, nombre, descripcion, precio, stock) VALUES (2, 'Chorizo', 'Picante', 2.0, 8)")
-        print("✅ Tapas de prueba insertadas.")
+        print("Tapas de prueba insertadas.")
     conexion.commit()
 
     # 2. Insertar usuario
