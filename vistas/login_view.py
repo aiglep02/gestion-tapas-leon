@@ -1,7 +1,10 @@
 # vistas/login_view.py
 
-from PyQt5.QtWidgets import QDialog, QDesktopWidget
+from PyQt5.QtWidgets import QDialog, QDesktopWidget, QWidget, QVBoxLayout
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 from vistas.login import Ui_Dialog
+import os
 
 class VentanaLogin(QDialog):
     def __init__(self, coordinador):  
@@ -10,14 +13,37 @@ class VentanaLogin(QDialog):
         self.ui.setupUi(self)
         self.coordinador = coordinador  
 
-        # ✅ Establecer tamaño fijo de la ventana
-        self.setFixedSize(500, 600)  # Ajusta si quieres más compacto
+        # ✅ Establecer tamaño fijo razonable
+        self.setFixedSize(500, 600)
 
         # ✅ Centrar ventana en pantalla
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+        # ✅ Cargar logo desde archivo y mostrarlo centrado en un layout dedicado
+        ruta_logo = os.path.join("interfaces", "logoGestionTapas.jpg")
+        if os.path.exists(ruta_logo):
+            pixmap_original = QPixmap(ruta_logo)
+            if not pixmap_original.isNull():
+                pixmap_escalado = pixmap_original.scaled(
+                    450, 300, Qt.KeepAspectRatio, Qt.SmoothTransformation
+                )
+                self.ui.logo.setPixmap(pixmap_escalado)
+
+                # ✅ Crear layout contenedor para centrar el logo
+                logo_container = QWidget()
+                logo_layout = QVBoxLayout(logo_container)
+                logo_layout.setAlignment(Qt.AlignCenter)
+                logo_layout.addWidget(self.ui.logo)
+
+                # ✅ Insertar el contenedor centrado al principio del layout principal
+                self.ui.verticalLayout.insertWidget(0, logo_container)
+            else:
+                print("[ERROR] Imagen vacía, no cargada.")
+        else:
+            print(f"[ERROR] Imagen no encontrada: {ruta_logo}")
 
         # ✅ Conectar botones
         self.ui.btnLogin.clicked.connect(self.login)
