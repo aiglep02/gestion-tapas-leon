@@ -42,7 +42,7 @@ class Ui_Dialog(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.logo = QtWidgets.QLabel(Dialog)
         self.logo.setText("")
-        self.logo.setPixmap(QtGui.QPixmap("interfaces\\../../logoGestionTapas.jpg"))
+        self.logo.setPixmap(QtGui.QPixmap("interfaces\\logoGestionTapas.jpg"))
         self.logo.setScaledContents(True)
         self.logo.setObjectName("logo")
         self.verticalLayout.addWidget(self.logo)

@@ -6,13 +6,19 @@ from vistas.registro import Ui_contenedorCentral  # Usa el nombre correcto segú
 from modelos.ConexionMYSQL import conectar
 import mysql.connector  # Necesario para capturar errores específicos
 import hashlib
+from PyQt5.QtWidgets import QDesktopWidget
 
 class VentanaRegistro(QDialog):
     def __init__(self):
         super().__init__()
         self.ui = Ui_contenedorCentral()
         self.ui.setupUi(self)
-
+        
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+        
         # ✅ Estilo visual
         ruta_estilo = os.path.join("estilos", "estilo.qss")
         if os.path.exists(ruta_estilo):

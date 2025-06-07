@@ -45,7 +45,7 @@ QPushButton {
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>../../logoGestionTapas.jpg</pixmap>
+        <pixmap>logoGestionTapas.jpg</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
