@@ -61,7 +61,7 @@ class VentanaRegistro(QDialog):
             self.ui.lblError.setText("Las contraseñas no coinciden.")
             return
 
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        if not re.fullmatch(r"[a-zA-Z0-9_.+-]+@gmail\.com", email):
             self.ui.lblError.setText("Introduce un correo electrónico válido.")
             return
 
@@ -77,6 +77,10 @@ class VentanaRegistro(QDialog):
 
             if usuario_dao.email_existente(email):
                 self.ui.lblError.setText("Ese email ya está registrado.")
+                conn.close()
+                return
+            if usuario_dao.nombre_existente(nombre):
+                self.ui.lblError.setText("Ese nombre de usuario ya está en uso.")
                 conn.close()
                 return
 
