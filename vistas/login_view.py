@@ -1,6 +1,6 @@
 # vistas/login_view.py
 
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QDesktopWidget
 from vistas.login import Ui_Dialog
 
 class VentanaLogin(QDialog):
@@ -10,6 +10,16 @@ class VentanaLogin(QDialog):
         self.ui.setupUi(self)
         self.coordinador = coordinador  
 
+        # ✅ Establecer tamaño fijo de la ventana
+        self.setFixedSize(500, 600)  # Ajusta si quieres más compacto
+
+        # ✅ Centrar ventana en pantalla
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+        # ✅ Conectar botones
         self.ui.btnLogin.clicked.connect(self.login)
         self.ui.botonRegistro.clicked.connect(self.abrir_registro)
         self.ui.botonAnonimo.clicked.connect(self.entrar_como_invitado)
