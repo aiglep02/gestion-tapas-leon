@@ -23,3 +23,7 @@ class UsuarioDAO:
                 rol=fila["rol"]
             )
         return None
+    def email_existente(self, email):
+        cursor = self.db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM usuario WHERE email = %s", (email,))
+        return cursor.fetchone()[0] > 0
