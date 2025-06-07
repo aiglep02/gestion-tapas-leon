@@ -10,14 +10,15 @@ from modelos.vo.pedidoVO import PedidoVO
 from vistas.ventana_pedidos_cliente import VentanaPedidosCliente
 
 class VentanaClienteRegistrado(QWidget):
-    def __init__(self, usuario_id=None):
+    def __init__(self, usuario_id, nombre):
         super().__init__()
         self.setWindowTitle("Panel Cliente Registrado")
         self.setFixedSize(400, 300)
         self.usuario_id = usuario_id
+        self.nombre = nombre
         layout = QVBoxLayout()
 
-        mensaje = QLabel("Bienvenido, Cliente Registrado")
+        mensaje = QLabel(f"Bienvenido, {self.nombre}")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)

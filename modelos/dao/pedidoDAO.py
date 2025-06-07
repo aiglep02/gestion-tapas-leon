@@ -27,10 +27,13 @@ class PedidoDAO:
                 WHERE p.usuario_id = %s
                 ORDER BY p.fecha DESC
             """, (usuario_id,))
-            return self.cursor.fetchall()
+            resultados = self.cursor.fetchall()
+            print(f"Pedidos del usuario {usuario_id}:", resultados)
+            return resultados
         except Exception as e:
             print("Error al obtener pedidos:", e)
             return []
+
 
 
 
