@@ -1,24 +1,24 @@
-"""
-import mysql.connector
+# modelos/ConexionMYSQL.py
 
-def conectar():
-    return mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='bdpass',
-        database='gestion_tapas'
-    )
-"""
 import mysql.connector
 
 class ConexionMYSQL:
-    def __init__(self, database='gestion_tapas'):
-        self.conexion = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='bdpass',
-            database=database
-        )
+    _instancia = None  # ← Singleton: única instancia
 
+    def __new__(cls, *args, **kwargs):
+        if cls._instancia is None:
+            cls._instancia = super(ConexionMYSQL, cls).__new__(cls)
+            cls._instancia._conexion = mysql.connector.connect(
+                host='localhost',
+                user='root',
+                password='bdpass',
+                database='gestion_tapas'
+            )
+        return cls._instancia
+
+    def obtener_conexion(self):
+        return self._conexion
+
+# ⚠️ Esta es la función que usarás en todos los archivos
 def conectar():
-    return ConexionMYSQL().conexion
+    return ConexionMYSQL().obtener_conexion()

@@ -1,5 +1,5 @@
 from controladores.ControladorLogin import ControladorLogin
-from controladores.controladorRegistro import VentanaRegistro
+from controladores.ControladorRegistro import VentanaRegistro
 from vistas.ventana_admin import VentanaAdmin
 from vistas.ventana_empleado import VentanaEmpleado
 from vistas.ventana_cliente import VentanaClienteRegistrado
