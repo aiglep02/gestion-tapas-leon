@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 from vistas.registro import Ui_contenedorCentral  # Usa el nombre correcto según tu .ui
 from modelos.ConexionMYSQL import conectar
 import mysql.connector  # Necesario para capturar errores específicos
+import hashlib
 
 class VentanaRegistro(QDialog):
     def __init__(self):
@@ -32,6 +33,7 @@ class VentanaRegistro(QDialog):
         # ✅ Conectar botón de registro
         self.ui.btnRegistrarse.clicked.connect(self.registrar_usuario)
 
+
     def registrar_usuario(self):
         nombre = self.ui.txtNombre.text()
         email = self.ui.txtEmail.text()
@@ -39,7 +41,6 @@ class VentanaRegistro(QDialog):
         confirmar = self.ui.txtContrasena2.text()
         rol = self.ui.comboRol.currentText()
 
-        # Validación básica
         if not nombre or not email or not contrasena or not confirmar:
             self.ui.lblError.setText("Todos los campos son obligatorios.")
             return
@@ -48,16 +49,19 @@ class VentanaRegistro(QDialog):
             self.ui.lblError.setText("Las contraseñas no coinciden.")
             return
 
+        # 🔐 ENCRIPTAR LA CONTRASEÑA:
+        hash_contrasena = hashlib.sha256(contrasena.encode()).hexdigest()
+
         try:
             conn = conectar()
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO Usuario (nombre, email, contraseña, rol)
                 VALUES (%s, %s, %s, %s)
-            """, (nombre, email, contrasena, rol))
+            """, (nombre, email, hash_contrasena, rol))
             conn.commit()
             self.ui.lblError.setText("Usuario registrado correctamente.")
-            conn.close()  # solo se ejecuta si la conexión fue exitosa
+            conn.close()
         except mysql.connector.IntegrityError:
             self.ui.lblError.setText("Ese email ya está registrado.")
         except Exception as e:
