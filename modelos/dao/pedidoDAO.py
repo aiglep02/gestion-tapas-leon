@@ -60,6 +60,19 @@ class PedidoDAO:
             print("Error al actualizar estado del pedido:", e)
             return False
 
+    def obtener_pedidos_entregados_por_usuario(self, usuario_id):
+        try:
+            self.cursor.execute("""
+                SELECT DISTINCT t.id, t.nombre
+                FROM pedido p
+                JOIN tapa t ON p.id_tapa = t.id
+                WHERE p.usuario_id = %s AND p.estado = 'entregado'
+            """, (usuario_id,))
+            return self.cursor.fetchall()
+        except Exception as e:
+            print("Error al obtener tapas entregadas:", e)
+            return []
+
 
 
 

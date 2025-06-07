@@ -8,6 +8,7 @@ from modelos.dao.tapaDAO import TapaDAO
 from modelos.dao.pedidoDAO import PedidoDAO
 from modelos.vo.pedidoVO import PedidoVO
 from vistas.ventana_pedidos_cliente import VentanaPedidosCliente
+from vistas.ventana_valoracion import VentanaValoracion
 
 class VentanaClienteRegistrado(QWidget):
     def __init__(self, usuario_id, nombre):
@@ -51,8 +52,10 @@ class VentanaClienteRegistrado(QWidget):
         self.pedidoDAO = PedidoDAO()
         self.btnHacerPedido.clicked.connect(self.hacer_pedido)
 
-        
-
+        # Boton valoraciones
+        self.btnValorar = QPushButton("Valorar tapas")
+        layout.addWidget(self.btnValorar)
+        self.btnValorar.clicked.connect(self.abrir_valoracion)
 
     def cargar_tapas(self):
         tapas = self.tapaDAO.obtener_todas_las_tapas()
@@ -82,4 +85,8 @@ class VentanaClienteRegistrado(QWidget):
     def abrir_historial(self):
         self.ventana_historial = VentanaPedidosCliente(self.usuario_id)
         self.ventana_historial.show()
+        
+    def abrir_valoracion(self):
+        self.ventana_valoracion = VentanaValoracion(self.usuario_id)
+        self.ventana_valoracion.show()
 
