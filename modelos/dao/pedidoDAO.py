@@ -33,6 +33,34 @@ class PedidoDAO:
         except Exception as e:
             print("Error al obtener pedidos:", e)
             return []
+    def obtener_pedidos_pendientes(self):
+        try:
+            self.cursor.execute("""
+                SELECT p.id, u.nombre AS cliente, t.nombre AS tapa, p.cantidad, p.estado, p.fecha
+                FROM pedido p
+                JOIN usuario u ON p.usuario_id = u.id
+                JOIN tapa t ON p.id_tapa = t.id
+                WHERE p.estado != 'entregado'
+                ORDER BY p.fecha ASC
+            """)
+            return self.cursor.fetchall()
+        except Exception as e:
+            print("Error al obtener pedidos:", e)
+            return []
+        
+    def actualizar_estado_pedido(self, id_pedido, nuevo_estado):
+        try:
+            self.cursor.execute(
+                "UPDATE pedido SET estado = %s WHERE id = %s",
+                (nuevo_estado, id_pedido)
+            )
+            self.conn.commit()
+            return True
+        except Exception as e:
+            print("Error al actualizar estado del pedido:", e)
+            return False
+
+
 
 
 

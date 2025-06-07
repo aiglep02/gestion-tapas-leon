@@ -39,7 +39,7 @@ class Coordinador:
         self.admin.show()
 
     def abrir_panel_empleado(self, usuario_vo):
-        self.empleado = VentanaEmpleado()
+        self.empleado = VentanaEmpleado(usuario_vo.nombre)
         self.empleado.setWindowTitle(f"Empleado - {usuario_vo.nombre}")
         self.empleado.show()
 

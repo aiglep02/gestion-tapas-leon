@@ -1,7 +1,7 @@
-from modelos.PedidoDAO import PedidoDAO
-from modelos.LineaPedidoDAO import LineaPedidoDAO
-from modelos.PedidoVO import PedidoVO
-from modelos.LineaPedidoVO import LineaPedidoVO
+from modelos.dao.pedidoDAO import PedidoDAO
+from modelos.dao.LineaPedidoDAO import LineaPedidoDAO
+from modelos.vo.pedidoVO import PedidoVO
+from modelos.vo.LineaPedidoVO import LineaPedidoVO
 
 class ControladorPedido:
     def __init__(self, conexion):
