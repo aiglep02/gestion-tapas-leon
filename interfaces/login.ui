@@ -73,11 +73,7 @@ QPushButton {
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="lineEdit"/>
      </item>
      <item>
       <widget class="QLabel" name="label_2">
@@ -88,12 +84,35 @@ QPushButton {
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit_2">
-       <property name="text">
-        <string/>
-       </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_rol">
+       <property name="text">
+        <string>Selecciona tu rol</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboRol">
+       <item>
+        <property name="text">
+         <string>Cliente</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Empleado</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Administrador</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>

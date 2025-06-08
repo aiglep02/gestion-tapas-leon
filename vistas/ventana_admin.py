@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from estrategias.EstadisticaTopTapas import EstadisticaTopTapas
 from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
-from controladores.controladorEstadisticas import ControladorEstadisticas
+from controladores.ControladorEstadisticas import ControladorEstadisticas
 
 class VentanaAdmin(QWidget):
     def __init__(self, nombre_admin):

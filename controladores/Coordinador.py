@@ -1,5 +1,5 @@
 from controladores.ControladorLogin import ControladorLogin
-from controladores.controladorRegistro import VentanaRegistro
+from controladores.ControladorRegistro import VentanaRegistro
 from vistas.ventana_admin import VentanaAdmin
 from vistas.ventana_empleado import VentanaEmpleado
 from vistas.ventana_cliente import VentanaClienteRegistrado
@@ -12,17 +12,26 @@ class Coordinador:
         self.registro_ventana = VentanaRegistro()
         self.intentos_fallidos = 0
 
-    def login(self, email, contrasena, login_vista):
+    def login(self, email, contrasena, rol_ingresado, login_vista):
         usuario_vo = self.login_controller.verificar_credenciales(email, contrasena)
         if usuario_vo:
+            rol_real = usuario_vo.rol.lower().strip()
+            rol_ingresado = rol_ingresado.lower().strip()
+
+            print(f"[DEBUG] Comparando rol → BD: '{rol_real}' | Seleccionado: '{rol_ingresado}'")
+
+            if rol_real != rol_ingresado:
+                login_vista.mostrar_error(f"El usuario no es {rol_ingresado}.")
+                return
+
             self.intentos_fallidos = 0
             login_vista.close()
 
             print(f"[INFO] Login correcto: {usuario_vo.nombre} ({usuario_vo.rol})")
 
-            if usuario_vo.rol == "admin":
+            if rol_real == "admin":
                 self.abrir_panel_admin(usuario_vo)
-            elif usuario_vo.rol == "empleado":
+            elif rol_real == "empleado":
                 self.abrir_panel_empleado(usuario_vo)
             else:
                 self.abrir_panel_cliente(usuario_vo)

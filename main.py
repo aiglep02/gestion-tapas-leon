@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     conexion = conectar()
     coordinador = Coordinador(conexion)
-    login = VentanaLogin(coordinador)  # ← ya no da error
+    login = VentanaLogin(coordinador)  
     login.show()
 
     sys.exit(app.exec_())
