@@ -107,7 +107,7 @@ class VentanaInvitado(QWidget):
             QMessageBox.warning(self, "No disponible", "Esta tapa no está disponible.")
             return
 
-        pedido = PedidoVO(None, id_tapa, cantidad, estado="En preparación")
+        pedido = PedidoVO(23, id_tapa, cantidad, estado="En preparación")
         exito = self.pedidoDAO.insertar_pedido(pedido)
 
         if exito:

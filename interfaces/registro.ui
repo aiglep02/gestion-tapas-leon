@@ -138,6 +138,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="btnCancelar">
+        <property name="text">
+         <string>Salir</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="lblError">
         <property name="text">
          <string/>

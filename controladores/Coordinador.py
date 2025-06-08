@@ -9,7 +9,7 @@ class Coordinador:
     def __init__(self, conexion):
         self.conexion = conexion
         self.login_controller = ControladorLogin(conexion)
-        self.registro_ventana = VentanaRegistro()
+        self.registro_ventana = VentanaRegistro(self)  # Asegúrate de pasar el coordinador a las ventanas
         self.intentos_fallidos = 0
 
     def login(self, email, contrasena, rol_ingresado, login_vista):

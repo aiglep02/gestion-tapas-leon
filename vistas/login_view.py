@@ -1,5 +1,3 @@
-# vistas/login_view.py
-
 from PyQt5.QtWidgets import QDialog, QDesktopWidget, QWidget, QVBoxLayout, QPushButton, QMessageBox, QHBoxLayout
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
@@ -7,11 +5,11 @@ from vistas.login import Ui_Dialog
 import os
 
 class VentanaLogin(QDialog):
-    def __init__(self, coordinador):
+    def __init__(self, coordinador=None):
         super().__init__()
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        self.coordinador = coordinador
+        self.coordinador = coordinador  # Nos aseguramos de que el coordinador se pasa correctamente.
 
         # ✅ Establecer tamaño fijo razonable
         self.setFixedSize(500, 600)
@@ -64,7 +62,8 @@ class VentanaLogin(QDialog):
         index = self.ui.comboRol.currentIndex()
         roles_internos = ["cliente", "empleado", "admin"]
         rol_seleccionado = roles_internos[index]
-        self.coordinador.login(email, contrasena, rol_seleccionado, self)
+        if self.coordinador:  # Aseguramos que coordinador existe antes de llamar a login
+            self.coordinador.login(email, contrasena, rol_seleccionado, self)
 
     def mostrar_error(self, mensaje):
         self.ui.labelError.setText(mensaje)

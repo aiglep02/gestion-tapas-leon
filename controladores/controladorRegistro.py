@@ -11,13 +11,15 @@ import mysql.connector
 from vistas.registro import Ui_contenedorCentral
 from modelos.ConexionMYSQL import conectar
 from modelos.dao.usuarioDAO import UsuarioDAO
+from vistas.login_view import VentanaLogin
 
 
 class VentanaRegistro(QDialog):
-    def __init__(self):
+    def __init__(self, coordinador=None):
         super().__init__()
         self.ui = Ui_contenedorCentral()
         self.ui.setupUi(self)
+        self.coordinador = coordinador
 
         # ✅ Centrar ventana
         qr = self.frameGeometry()
@@ -42,7 +44,7 @@ class VentanaRegistro(QDialog):
             pixmap = pixmap.scaled(250, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             logo.setPixmap(pixmap)
 
-        # ✅ Añadir botón de ayuda "?"
+        # ✅ Añadir botón de ayuda
         ayuda_layout = QHBoxLayout()
         ayuda_layout.setAlignment(Qt.AlignRight)
         boton_ayuda = QPushButton("?")
@@ -52,14 +54,23 @@ class VentanaRegistro(QDialog):
         ayuda_layout.addWidget(boton_ayuda)
         self.ui.verticalLayout_2.addLayout(ayuda_layout)
 
-        # ✅ Forzar el ComboBox a "cliente" y desactivarlo
+        # ✅ Forzar el ComboBox a cliente y desactivarlo
         if hasattr(self.ui, "comboRol"):
             self.ui.comboRol.clear()
             self.ui.comboRol.addItem("cliente")
             self.ui.comboRol.setEnabled(False)
 
-        # ✅ Conectar botón de registro
+        # ✅ Conectar botones
         self.ui.btnRegistrarse.clicked.connect(self.registrar_usuario)
+
+        # ✅ Botón "Salir" → volver al login
+        if hasattr(self.ui, "btnCancelar"):
+            self.ui.btnCancelar.clicked.connect(self.volver_al_login)
+
+    def volver_al_login(self):
+        self.close()
+        self.login = VentanaLogin(self.coordinador)
+        self.login.show()
 
     def mostrar_ayuda(self):
         QMessageBox.information(
