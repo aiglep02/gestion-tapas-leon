@@ -12,12 +12,13 @@ from vistas.ventana_valoracion import VentanaValoracion
 from vistas.ventana_estadisticas import VentanaEstadisticas
 
 class VentanaClienteRegistrado(QWidget):
-    def __init__(self, usuario_id, nombre):
+    def __init__(self, usuario_id, nombre, coordinador):
         super().__init__()
         self.setWindowTitle("Panel Cliente Registrado")
         self.setFixedSize(400, 300)
         self.usuario_id = usuario_id
         self.nombre = nombre
+        self.coordinador = coordinador
 
         # Estilo visual
         with open("estilos/estilo.qss", "r") as f:
@@ -75,6 +76,18 @@ class VentanaClienteRegistrado(QWidget):
 
         self.btnHacerPedido.clicked.connect(self.hacer_pedido)
 
+        #Botón cerrar sesión
+        self.btnCerrarSesion = QPushButton("Cerrar sesión")
+        self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
+        layout.addWidget(self.btnCerrarSesion)
+
+    def cerrar_sesion(self):
+        self.close()
+        from vistas.login_view import VentanaLogin
+        self.login = VentanaLogin(self.coordinador)
+        self.login.show()
+
+    
     def cargar_tapas(self):
         tapas = self.tapaDAO.obtener_todas_las_tapas()
         self.comboTapas.clear()

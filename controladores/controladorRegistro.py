@@ -128,7 +128,21 @@ def enviar_codigo_verificacion(destinatario, nombre_usuario, codigo):
     msg["Subject"] = "Código de verificación - Gestión de Tapas"
     msg["From"] = remitente
     msg["To"] = destinatario
-    msg.set_content(f"Hola {nombre_usuario},\n\nTu código de verificación es: {codigo}\n\nIntroduce este código para confirmar tu registro.")
+
+    # Versión mejorada del mensaje de correo electrónico
+    msg.set_content(f"""Estimado/a {nombre_usuario},
+
+    ¡Gracias por registrarte en "Gestión de Tapas León"! 🍻 Tu gestor favorito de tapas en la ciudad te da la bienvenida.
+    Para completar tu proceso de registro y verificar tu cuenta, por favor, introduce el siguiente código de verificación en la aplicación:
+
+    Su código de verificación es: 👉 {codigo} 👈
+
+    Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.
+    ¡Esperamos verte pronto disfrutando de las mejores tapas de León! 🤩
+    Atentamente,
+
+    El equipo de Gestión de Tapas León 🦁
+    """)
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:

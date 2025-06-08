@@ -1,5 +1,5 @@
 from controladores.ControladorLogin import ControladorLogin
-from controladores.ControladorRegistro import VentanaRegistro
+from controladores.controladorRegistro import VentanaRegistro
 from vistas.ventana_admin import VentanaAdmin
 from vistas.ventana_empleado import VentanaEmpleado
 from vistas.ventana_cliente import VentanaClienteRegistrado
@@ -43,19 +43,20 @@ class Coordinador:
                 exit(0)
 
     def abrir_panel_admin(self, usuario_vo):
-        self.admin = VentanaAdmin(usuario_vo.nombre)
+        self.admin = VentanaAdmin(usuario_vo.nombre, self)
         self.admin.setWindowTitle(f"Admin - {usuario_vo.nombre}")
         self.admin.show()
 
     def abrir_panel_empleado(self, usuario_vo):
-        self.empleado = VentanaEmpleado(usuario_vo.nombre)
+        self.empleado = VentanaEmpleado(usuario_vo.nombre, self)
         self.empleado.setWindowTitle(f"Empleado - {usuario_vo.nombre}")
         self.empleado.show()
 
     def abrir_panel_cliente(self, usuario_vo):
-        self.cliente = VentanaClienteRegistrado(usuario_vo.id_usuario, usuario_vo.nombre)
+        self.cliente = VentanaClienteRegistrado(usuario_vo.id_usuario, usuario_vo.nombre, self)
         self.cliente.setWindowTitle(f"Cliente - {usuario_vo.nombre}")
         self.cliente.show()
+
 
     def mostrar_vista_invitado(self):
         self.invitado = VentanaInvitado()
