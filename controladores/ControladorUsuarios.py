@@ -1,3 +1,4 @@
+from PyQt5.QtWidgets import QMessageBox
 class ControladorUsuarios:
     def __init__(self, conexion):
         self.db = conexion
