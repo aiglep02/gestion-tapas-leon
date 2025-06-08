@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QTableWidgetItem
+from PyQt5.QtWidgets import QDialog, QTableWidgetItem, QPushButton, QHBoxLayout, QMessageBox
 from vistas.ventana_admin_usuarios import Ui_AdminUsuarios 
 from modelos.ConexionMYSQL import conectar
 
@@ -15,6 +15,17 @@ class AdminUsuarios(QDialog):
 
         # Conexión a base de datos
         self.db = conectar()
+
+        # Añadir botón de ayuda "?" en tiempo de ejecución
+        self.boton_ayuda = QPushButton("?")
+        self.boton_ayuda.setFixedSize(30, 30)
+        self.boton_ayuda.setToolTip("Ayuda sobre esta pantalla")
+        self.boton_ayuda.clicked.connect(self.mostrar_ayuda)
+
+        ayuda_layout = QHBoxLayout()
+        ayuda_layout.setContentsMargins(0, 0, 0, 0)
+        ayuda_layout.addWidget(self.boton_ayuda)
+        self.ui.verticalLayout.insertLayout(0, ayuda_layout)
 
         # Cargar tabla al iniciar
         self.cargar_usuarios()
@@ -55,3 +66,13 @@ class AdminUsuarios(QDialog):
             self.db.commit()
             self.cargar_usuarios()
 
+    def mostrar_ayuda(self):
+        QMessageBox.information(
+            self,
+            "Ayuda - Gestión de Usuarios",
+            "Desde esta pantalla puedes:\n"
+            "- Consultar todos los usuarios registrados en el sistema.\n"
+            "- Cambiar el rol de un usuario (cliente, empleado, administrador).\n"
+            "- Eliminar usuarios de la base de datos.\n\n"
+            "Cuidado: No hay confirmación al eliminar un usuario."
+        )

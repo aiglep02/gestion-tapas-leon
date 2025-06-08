@@ -1,13 +1,13 @@
-import os
-import re
-import hashlib
-import mysql.connector
-import smtplib
-import random
-from email.message import EmailMessage
-from PyQt5.QtWidgets import QDialog, QDesktopWidget, QInputDialog
+from PyQt5.QtWidgets import (
+    QDialog, QDesktopWidget, QWidget, QVBoxLayout, QHBoxLayout,
+    QPushButton, QMessageBox, QInputDialog
+)
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+import os, re, hashlib, smtplib, random
+from email.message import EmailMessage
+import mysql.connector
+
 from vistas.registro import Ui_contenedorCentral
 from modelos.ConexionMYSQL import conectar
 from modelos.dao.usuarioDAO import UsuarioDAO
@@ -42,6 +42,16 @@ class VentanaRegistro(QDialog):
             pixmap = pixmap.scaled(250, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             logo.setPixmap(pixmap)
 
+        # ✅ Añadir botón de ayuda "?"
+        ayuda_layout = QHBoxLayout()
+        ayuda_layout.setAlignment(Qt.AlignRight)
+        boton_ayuda = QPushButton("?")
+        boton_ayuda.setFixedSize(30, 30)
+        boton_ayuda.setToolTip("Ayuda sobre el registro")
+        boton_ayuda.clicked.connect(self.mostrar_ayuda)
+        ayuda_layout.addWidget(boton_ayuda)
+        self.ui.verticalLayout_2.addLayout(ayuda_layout)
+
         # ✅ Forzar el ComboBox a "cliente" y desactivarlo
         if hasattr(self.ui, "comboRol"):
             self.ui.comboRol.clear()
@@ -51,14 +61,25 @@ class VentanaRegistro(QDialog):
         # ✅ Conectar botón de registro
         self.ui.btnRegistrarse.clicked.connect(self.registrar_usuario)
 
+    def mostrar_ayuda(self):
+        QMessageBox.information(
+            self,
+            "Ayuda - Registro",
+            "Para registrarte necesitas rellenar todos los campos:\n"
+            "- Nombre de usuario único\n"
+            "- Correo electrónico de Gmail válido\n"
+            "- Contraseña con mínimo 8 caracteres, con letras y números\n\n"
+            "Se te enviará un código al correo y deberás introducirlo para completar el registro.\n"
+            "Solo se permiten registros de clientes. Los empleados y administradores deben ser añadidos por el administrador."
+        )
+
     def registrar_usuario(self):
         nombre = self.ui.txtNombre.text()
         email = self.ui.txtEmail.text()
         contrasena = self.ui.txtContrasena.text()
         confirmar = self.ui.txtContrasena2.text()
-        rol = "cliente"  # ⬅️ FORZAMOS el rol a "cliente" siempre
+        rol = "cliente"
 
-        # ✅ Validaciones básicas
         if not nombre or not email or not contrasena or not confirmar:
             self.ui.lblError.setText("Todos los campos son obligatorios.")
             return
@@ -90,11 +111,9 @@ class VentanaRegistro(QDialog):
                 conn.close()
                 return
 
-            # ✅ Generar y enviar código de verificación
             codigo = str(random.randint(100000, 999999))
             enviar_codigo_verificacion(email, nombre, codigo)
 
-            # ✅ Mostrar cuadro de entrada para el código
             introducido, ok = QInputDialog.getText(self, "Verificación de Email",
                 f"Hemos enviado un código a {email}. Introduce el código:")
 
@@ -103,7 +122,6 @@ class VentanaRegistro(QDialog):
                 conn.close()
                 return
 
-            # ✅ Insertar usuario solo si el código es correcto
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO usuario (nombre, email, contraseña, rol)
@@ -119,7 +137,6 @@ class VentanaRegistro(QDialog):
             self.ui.lblError.setText(f"⚠️ Error: {str(e)}")
 
 
-# ✅ Función para enviar código de verificación
 def enviar_codigo_verificacion(destinatario, nombre_usuario, codigo):
     remitente = "gestion.tapas.leon@gmail.com"
     contraseña_app = "nclp rqwb fyvd flxn"
@@ -129,17 +146,12 @@ def enviar_codigo_verificacion(destinatario, nombre_usuario, codigo):
     msg["From"] = remitente
     msg["To"] = destinatario
 
-    # Versión mejorada del mensaje de correo electrónico
     msg.set_content(f"""Estimado/a {nombre_usuario},
 
-    ¡Gracias por registrarte en "Gestión de Tapas León"! 🍻 Tu gestor favorito de tapas en la ciudad te da la bienvenida.
-    Para completar tu proceso de registro y verificar tu cuenta, por favor, introduce el siguiente código de verificación en la aplicación:
+    ¡Gracias por registrarte en "Gestión de Tapas León"! 🍻
+    Tu código de verificación es: 👉 {codigo} 👈
 
-    Su código de verificación es: 👉 {codigo} 👈
-
-    Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.
-    ¡Esperamos verte pronto disfrutando de las mejores tapas de León! 🤩
-    Atentamente,
+    Si no has solicitado este registro, puedes ignorar este mensaje.
 
     El equipo de Gestión de Tapas León 🦁
     """)
