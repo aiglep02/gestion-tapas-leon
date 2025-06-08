@@ -133,15 +133,12 @@ def enviar_codigo_verificacion(destinatario, nombre_usuario, codigo):
     msg.set_content(f"""Estimado/a {nombre_usuario},
 
     ¡Gracias por registrarte en "Gestión de Tapas León"! 🍻 Tu gestor favorito de tapas en la ciudad te da la bienvenida.
-
     Para completar tu proceso de registro y verificar tu cuenta, por favor, introduce el siguiente código de verificación en la aplicación:
 
     Su código de verificación es: 👉 {codigo} 👈
 
-    Este código es válido por un tiempo limitado. Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.
-
+    Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.
     ¡Esperamos verte pronto disfrutando de las mejores tapas de León! 🤩
-
     Atentamente,
 
     El equipo de Gestión de Tapas León 🦁
