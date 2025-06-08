@@ -17,6 +17,11 @@ class VentanaClienteRegistrado(QWidget):
         self.setFixedSize(400, 300)
         self.usuario_id = usuario_id
         self.nombre = nombre
+
+        # Estilo visual
+        with open("estilos/estilo.qss", "r") as f:
+            self.setStyleSheet(f.read())
+
         layout = QVBoxLayout()
 
         mensaje = QLabel(f"Bienvenido, {self.nombre}")
@@ -38,24 +43,26 @@ class VentanaClienteRegistrado(QWidget):
         self.btnHacerPedido = QPushButton("Hacer pedido")
         layout.addWidget(self.btnHacerPedido)
 
-        # Botón ver pedidos
+        # Botón ver historial de pedidos
         self.btnVerPedidos = QPushButton("Ver mis pedidos")
+        self.btnVerPedidos.setObjectName("btnVerPedidos")
         layout.addWidget(self.btnVerPedidos)
         self.btnVerPedidos.clicked.connect(self.abrir_historial)
-        
-        self.setLayout(layout)
 
-        # Cargar las tapas desde la base de datos
-        self.tapaDAO = TapaDAO()
-        self.cargar_tapas()
-        
-        self.pedidoDAO = PedidoDAO()
-        self.btnHacerPedido.clicked.connect(self.hacer_pedido)
-
-        # Boton valoraciones
+        # Botón valorar tapas
         self.btnValorar = QPushButton("Valorar tapas")
+        self.btnValorar.setObjectName("btnValorar")
         layout.addWidget(self.btnValorar)
         self.btnValorar.clicked.connect(self.abrir_valoracion)
+
+        self.setLayout(layout)
+
+        # DAOs
+        self.tapaDAO = TapaDAO()
+        self.pedidoDAO = PedidoDAO()
+        self.cargar_tapas()
+
+        self.btnHacerPedido.clicked.connect(self.hacer_pedido)
 
     def cargar_tapas(self):
         tapas = self.tapaDAO.obtener_todas_las_tapas()
@@ -65,7 +72,7 @@ class VentanaClienteRegistrado(QWidget):
         for id_tapa, nombre, precio in tapas:
             texto = f"{nombre} ({float(precio):.2f}€)"
             self.comboTapas.addItem(texto, id_tapa)
-            
+
     def hacer_pedido(self):
         id_tapa = self.comboTapas.currentData()
         cantidad = self.spinCantidad.value()
@@ -74,18 +81,15 @@ class VentanaClienteRegistrado(QWidget):
             QMessageBox.warning(self, "Error", "Debes seleccionar una tapa.")
             return
 
-        pedido = PedidoVO(self.usuario_id, id_tapa, cantidad)
-        exito = self.pedidoDAO.insertar_pedido(pedido)
+        pedido = PedidoVO(self.usuario_id, id_tapa, cantidad, estado="En preparación")
+        self.pedidoDAO.insertar_pedido(pedido)
 
-        if exito:
-            QMessageBox.information(self, "Pedido realizado", "Tu pedido ha sido registrado correctamente.")
-        else:
-            QMessageBox.critical(self, "Error", "No se pudo registrar el pedido.")
+        QMessageBox.information(self, "Pedido realizado", "Tu pedido ha sido enviado a la cocina.")
 
     def abrir_historial(self):
         self.ventana_historial = VentanaPedidosCliente(self.usuario_id)
         self.ventana_historial.show()
-        
+
     def abrir_valoracion(self):
         self.ventana_valoracion = VentanaValoracion(self.usuario_id)
         self.ventana_valoracion.show()

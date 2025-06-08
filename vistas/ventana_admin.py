@@ -1,17 +1,27 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton, QMessageBox, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QVBoxLayout, QPushButton, QMessageBox,
+    QHBoxLayout, QTableWidget, QTableWidgetItem
+)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
+from estrategias.EstadisticaTopTapas import EstadisticaTopTapas
+from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
+from controladores.controladorEstadisticas import ControladorEstadisticas
 
 class VentanaAdmin(QWidget):
-    def __init__(self):
+    def __init__(self, nombre_admin):
         super().__init__()
+        self.nombre_admin = nombre_admin
         self.setWindowTitle("Panel Administrador")
-        self.setFixedSize(400, 200)
+        self.setMinimumSize(500, 400)
 
-        # Layout principal
+        # Aplicar estilo
+        with open("estilos/estilo.qss", "r") as f:
+            self.setStyleSheet(f.read())
+
         layout = QVBoxLayout()
 
-        # Layout superior para botón de ayuda
+        # Botón de ayuda
         ayuda_layout = QHBoxLayout()
         ayuda_layout.setAlignment(Qt.AlignRight)
         boton_ayuda = QPushButton("?")
@@ -21,11 +31,24 @@ class VentanaAdmin(QWidget):
         ayuda_layout.addWidget(boton_ayuda)
         layout.addLayout(ayuda_layout)
 
-        # Mensaje central
-        mensaje = QLabel("Bienvenido, Administrador")
+        # Mensaje de bienvenida
+        mensaje = QLabel(f"Bienvenido, {self.nombre_admin}")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)
+
+        # Botones de estadísticas
+        self.btnEstadisticas = QPushButton("Ver tapas más pedidas")
+        self.btnEstadisticas.clicked.connect(self.mostrar_estadisticas)
+        layout.addWidget(self.btnEstadisticas)
+
+        self.btnVerValoradas = QPushButton("Ver tapas mejor valoradas")
+        self.btnVerValoradas.clicked.connect(self.mostrar_valoradas)
+        layout.addWidget(self.btnVerValoradas)
+
+        # Tabla
+        self.tabla = QTableWidget()
+        layout.addWidget(self.tabla)
 
         self.setLayout(layout)
 
@@ -38,3 +61,29 @@ class VentanaAdmin(QWidget):
             "- Consultar y gestionar usuarios\n"
             "- Visualizar estadísticas de uso del sistema"
         )
+
+    def mostrar_estadisticas(self):
+        controlador = ControladorEstadisticas()
+        controlador.set_estrategia(EstadisticaTopTapas())
+        resultados = controlador.calcular_estadisticas()
+
+        self.tabla.setRowCount(len(resultados))
+        self.tabla.setColumnCount(2)
+        self.tabla.setHorizontalHeaderLabels(["Tapa", "Total Pedidos"])
+
+        for i, fila in enumerate(resultados):
+            self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
+            self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["total_pedida"])))
+
+    def mostrar_valoradas(self):
+        controlador = ControladorEstadisticas()
+        controlador.set_estrategia(EstadisticaTopValoradas())
+        resultados = controlador.calcular_estadisticas()
+
+        self.tabla.setRowCount(len(resultados))
+        self.tabla.setColumnCount(2)
+        self.tabla.setHorizontalHeaderLabels(["Tapa", "Puntuación Media"])
+
+        for i, fila in enumerate(resultados):
+            self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
+            self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["puntuacion_media"])))
