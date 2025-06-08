@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton,
     QComboBox, QMessageBox, QHBoxLayout
 )
+from PyQt5.QtCore import Qt
 from controladores.ControladorUsuarios import ControladorUsuarios
 from modelos.ConexionMYSQL import ConexionMYSQL
 import hashlib

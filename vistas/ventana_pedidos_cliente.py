@@ -1,4 +1,7 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QComboBox, QPushButton, QHBoxLayout, QMessageBox, QHeaderView
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem,
+    QComboBox, QPushButton, QHBoxLayout, QMessageBox, QHeaderView
+)
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from modelos.dao.pedidoDAO import PedidoDAO
@@ -16,6 +19,16 @@ class VentanaPedidosCliente(QWidget):
 
         layout = QVBoxLayout()
 
+        # Botón de ayuda en esquina superior derecha
+        ayuda_layout = QHBoxLayout()
+        ayuda_layout.setAlignment(Qt.AlignRight)
+        boton_ayuda = QPushButton("?")
+        boton_ayuda.setFixedSize(30, 30)
+        boton_ayuda.setToolTip("Ayuda sobre esta pantalla")
+        boton_ayuda.clicked.connect(self.mostrar_ayuda)
+        ayuda_layout.addWidget(boton_ayuda)
+        layout.addLayout(ayuda_layout)
+
         mensaje = QLabel("Mis pedidos")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
@@ -30,21 +43,31 @@ class VentanaPedidosCliente(QWidget):
         self.tapaDAO = TapaDAO()
         self.cargar_pedidos()
 
+    def mostrar_ayuda(self):
+        QMessageBox.information(
+            self,
+            "Ayuda - Pedidos del Cliente",
+            "Aquí puedes consultar tus pedidos anteriores.\n\n"
+            "Si un pedido aún está 'en preparación', puedes:\n"
+            " - Cambiar la tapa seleccionada por otra\n"
+            " - Eliminar el pedido si lo deseas\n\n"
+            "Una vez que el pedido ha sido preparado, ya no se puede modificar."
+        )
+
     def cargar_pedidos(self):
         pedidos = self.pedidoDAO.obtener_pedidos_por_usuario(self.usuario_id)
 
-        self.tabla.clearContents()        # Limpia contenido anterior (widgets incluidos)
-        self.tabla.setRowCount(0)         # Elimina filas viejas
+        self.tabla.clearContents()
+        self.tabla.setRowCount(0)
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(5)
         self.tabla.setHorizontalHeaderLabels(["ID", "Tapa", "Cantidad", "Estado", "Acciones"])
 
-        # Ajuste de columnas
-        self.tabla.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)  # ID
-        self.tabla.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)           # Tapa
-        self.tabla.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)  # Cantidad
-        self.tabla.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Estado
-        self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Acciones
+        self.tabla.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        self.tabla.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.tabla.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        self.tabla.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
         self.tabla.setColumnWidth(4, 260)
 
         for i, (id_pedido, tapa, cantidad, estado) in enumerate(pedidos):
@@ -80,7 +103,6 @@ class VentanaPedidosCliente(QWidget):
             else:
                 self.tabla.setItem(i, 4, QTableWidgetItem("-"))
 
-
     def eliminar_pedido(self, pedido_id):
         confirm = QMessageBox.question(
             self,
@@ -96,7 +118,6 @@ class VentanaPedidosCliente(QWidget):
             else:
                 QMessageBox.warning(self, "Error", "No se pudo eliminar el pedido.")
 
-                                
     def cambiar_tapa(self, pedido_id, combo):
         nueva_tapa_id = combo.currentData()
         if nueva_tapa_id:

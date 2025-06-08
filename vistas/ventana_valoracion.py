@@ -1,5 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QComboBox, QSpinBox, QTextEdit, QPushButton, QMessageBox
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QVBoxLayout, QHBoxLayout, QComboBox, QSpinBox,
+    QTextEdit, QPushButton, QMessageBox
+)
 from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
 from modelos.dao.pedidoDAO import PedidoDAO
 from modelos.dao.valoracionDAO import ValoracionDAO
 from modelos.vo.valoracionVO import ValoracionVO
@@ -14,12 +18,21 @@ class VentanaValoracion(QWidget):
         self.pedidoDAO = PedidoDAO()
         self.valoracionDAO = ValoracionDAO()
         
-        # Aplicar estilo visual desde estilo.qss
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
         layout = QVBoxLayout()
         self.setLayout(layout)
+
+        # Botón de ayuda
+        ayuda_layout = QHBoxLayout()
+        ayuda_layout.setAlignment(Qt.AlignRight)
+        boton_ayuda = QPushButton("?")
+        boton_ayuda.setFixedSize(30, 30)
+        boton_ayuda.setToolTip("Ayuda sobre esta pantalla")
+        boton_ayuda.clicked.connect(self.mostrar_ayuda)
+        ayuda_layout.addWidget(boton_ayuda)
+        layout.addLayout(ayuda_layout)
 
         titulo = QLabel("Valora tus tapas entregadas")
         titulo.setFont(QFont("Arial", 16))
@@ -45,6 +58,15 @@ class VentanaValoracion(QWidget):
         self.btnEnviar.clicked.connect(self.enviar_valoracion)
 
         self.cargar_tapas_entregadas()
+
+    def mostrar_ayuda(self):
+        QMessageBox.information(
+            self,
+            "Ayuda - Valoración de Tapas",
+            "En esta pantalla puedes valorar tapas que ya has recibido.\n\n"
+            "Selecciona una tapa que haya sido entregada, asigna una puntuación del 1 al 5\n"
+            "y añade un comentario si lo deseas. Tu opinión ayudará a mejorar el servicio."
+        )
 
     def cargar_tapas_entregadas(self):
         pedidos = self.pedidoDAO.obtener_pedidos_entregados_por_usuario(self.usuario_id)

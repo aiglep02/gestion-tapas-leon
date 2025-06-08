@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QHeaderView
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QHeaderView, QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 import sys
@@ -22,10 +22,21 @@ class VentanaEmpleado(QWidget):
 
         layout = QVBoxLayout()
 
+        # Botón cerrar sesión
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         layout.addWidget(self.btnCerrarSesion)
 
+        # Botón ayuda
+        ayuda_layout = QHBoxLayout()
+        ayuda_layout.setAlignment(Qt.AlignRight)
+        boton_ayuda = QPushButton("?")
+        boton_ayuda.setFixedSize(30, 30)
+        boton_ayuda.clicked.connect(self.mostrar_ayuda)
+        ayuda_layout.addWidget(boton_ayuda)
+        layout.addLayout(ayuda_layout)
+
+        # Mensaje bienvenida
         mensaje = QLabel(f"Bienvenido, {self.nombre_empleado}")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
@@ -42,6 +53,17 @@ class VentanaEmpleado(QWidget):
         from vistas.login_view import VentanaLogin
         self.login = VentanaLogin(self.coordinador)
         self.login.show()
+
+    def mostrar_ayuda(self):
+        QMessageBox.information(
+            self,
+            "Ayuda - Panel Empleado",
+            "Desde esta pantalla puedes gestionar los pedidos realizados por los clientes:\n"
+            "- Preparar, marcar como listo o entregado.\n"
+            "- Cada entrega resta del stock disponible.\n"
+            "- Solo verás pedidos en estado pendiente, preparación o listo.\n"
+            "Revisa la tabla para ver el estado y actuar sobre ellos."
+        )
 
     def cargar_pedidos(self):
         pedidos = self.pedidoDAO.obtener_pedidos_pendientes()
