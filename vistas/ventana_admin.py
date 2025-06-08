@@ -6,7 +6,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from estrategias.EstadisticaTopTapas import EstadisticaTopTapas
 from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
-from controladores.ControladorEstadisticas import ControladorEstadisticas
+from controladores.controladorEstadisticas import ControladorEstadisticas
+from vistas.ventana_admin_usuarios import VentanaAdminUsuarios  
 
 class VentanaAdmin(QWidget):
     def __init__(self, nombre_admin):
@@ -46,7 +47,13 @@ class VentanaAdmin(QWidget):
         self.btnVerValoradas.clicked.connect(self.mostrar_valoradas)
         layout.addWidget(self.btnVerValoradas)
 
-        # Tabla
+        # 🔹 Botón para gestionar usuarios
+        self.btnGestionUsuarios = QPushButton("Gestionar usuarios")
+        self.btnGestionUsuarios.setObjectName("btnGestionUsuarios")
+        self.btnGestionUsuarios.clicked.connect(self.abrir_gestion_usuarios)
+        layout.addWidget(self.btnGestionUsuarios)
+
+        # Tabla para estadísticas
         self.tabla = QTableWidget()
         layout.addWidget(self.tabla)
 
@@ -87,3 +94,7 @@ class VentanaAdmin(QWidget):
         for i, fila in enumerate(resultados):
             self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
             self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["puntuacion_media"])))
+
+    def abrir_gestion_usuarios(self):
+        self.ventana_usuarios = VentanaAdminUsuarios()
+        self.ventana_usuarios.show()

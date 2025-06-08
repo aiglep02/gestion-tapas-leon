@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QMessageBox, QTableWidgetItem
-from vistas.admin_usuarios import Ui_AdminUsuarios
+from vistas.ui_admin_usuarios import Ui_AdminUsuarios
 from controladores.ControladorUsuarios import ControladorUsuarios
 from modelos.ConexionMYSQL import ConexionMYSQL
 import os
@@ -17,13 +17,15 @@ class VentanaAdminUsuarios(QDialog):
                 self.setStyleSheet(f.read())
 
         # Conexión a base de datos y controlador
-        self.conexion = ConexionMYSQL().conexion
+        self.conexion = ConexionMYSQL()._conexion
         self.controlador = ControladorUsuarios(self.conexion)
 
         # Conectar señales de botones
-        self.ui.Actualizar.clicked.connect(self.cargar_usuarios)
+        self.ui.Actualizar.clicked.connect(self.actualizar_usuario)  # <- nuevo método
         self.ui.Eliminar.clicked.connect(self.eliminar_usuario)
-        self.ui.CambiarRol.clicked.connect(self.cambiar_rol)
+        # Eliminar funcionalidad del botón "Rol"
+        self.ui.CambiarRol.setEnabled(False)
+        self.ui.CambiarRol.setVisible(False)
 
         # Cargar usuarios al iniciar
         self.cargar_usuarios()
@@ -53,9 +55,16 @@ class VentanaAdminUsuarios(QDialog):
                 self.controlador.eliminar_usuario(usuario_id)
                 self.cargar_usuarios()
 
-    def cambiar_rol(self):
+    def actualizar_usuario(self):
         usuario_id = self.obtener_usuario_seleccionado()
         nuevo_rol = self.ui.Rol.currentText()
-        if usuario_id:
-            self.controlador.actualizar_rol_usuario(usuario_id, nuevo_rol)
+        if usuario_id is None:
+            QMessageBox.warning(self, "Error", "Selecciona un usuario en la tabla.")
+            return
+
+        actualizado = self.controlador.actualizar_rol_usuario(usuario_id, nuevo_rol)
+        if actualizado:
+            QMessageBox.information(self, "Éxito", f"Rol actualizado a '{nuevo_rol}' para el usuario {usuario_id}.")
             self.cargar_usuarios()
+        else:
+            QMessageBox.warning(self, "Error", "No se pudo actualizar el rol.")
