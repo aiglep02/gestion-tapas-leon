@@ -59,7 +59,8 @@ class Coordinador:
 
 
     def mostrar_vista_invitado(self):
-        self.invitado = VentanaInvitado()
+        from vistas.ventana_invitado import VentanaInvitado
+        self.invitado = VentanaInvitado(self)
         self.invitado.show()
 
     def mostrar_registro(self):

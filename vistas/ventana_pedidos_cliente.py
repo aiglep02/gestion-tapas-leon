@@ -84,7 +84,7 @@ class VentanaPedidosCliente(QWidget):
 
                 combo = QComboBox()
                 tapas = self.tapaDAO.obtener_todas_las_tapas()
-                for id_tapa, nombre in tapas:
+                for id_tapa, nombre, _ in tapas:
                     combo.addItem(f"{nombre}", id_tapa)
                 layout.addWidget(combo)
 

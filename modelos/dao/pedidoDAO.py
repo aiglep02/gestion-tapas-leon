@@ -8,14 +8,14 @@ class PedidoDAO:
 
     def insertar_pedido(self, pedidoVO):
         try:
-            if not pedidoVO.id_usuario or not pedidoVO.id_tapa or not pedidoVO.cantidad or not pedidoVO.estado:
+            if pedidoVO.id_tapa is None or pedidoVO.cantidad is None or pedidoVO.estado is None:
                 raise ValueError("Datos incompletos para insertar el pedido.")
             
             self.cursor.execute("""
                 INSERT INTO pedido (usuario_id, id_tapa, cantidad, estado)
                 VALUES (%s, %s, %s, %s)
             """, (
-                pedidoVO.id_usuario,
+                pedidoVO.id_usuario,  # Puede ser None
                 pedidoVO.id_tapa,
                 pedidoVO.cantidad,
                 pedidoVO.estado
@@ -29,6 +29,7 @@ class PedidoDAO:
         except Exception as e:
             print("Error al insertar pedido:", e)
             return None
+
 
     def obtener_pedidos_por_usuario(self, usuario_id):
         try:
