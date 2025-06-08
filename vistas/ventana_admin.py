@@ -74,13 +74,15 @@ class VentanaAdmin(QWidget):
     
     def mostrar_ayuda(self):
         QMessageBox.information(
-            self,
-            "Ayuda - Panel Administrador",
-            "Desde esta pantalla puedes:\n"
-            "- Gestionar tapas (crear, modificar, eliminar)\n"
-            "- Consultar y gestionar usuarios\n"
-            "- Visualizar estadísticas de uso del sistema"
-        )
+                self,
+                "Ayuda - Panel Administrador",
+                "En este panel puedes realizar las siguientes acciones:\n"
+                "- Consultar las tapas más pedidas por los clientes\n"
+                "- Ver las tapas mejor valoradas\n"
+                "- Acceder a la gestión de usuarios registrados\n"
+                "- Cerrar sesión para volver al login"
+            )
+
 
     def mostrar_estadisticas(self):
         controlador = ControladorEstadisticas()

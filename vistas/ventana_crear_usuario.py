@@ -1,4 +1,7 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QComboBox, QMessageBox
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton,
+    QComboBox, QMessageBox, QHBoxLayout
+)
 from controladores.ControladorUsuarios import ControladorUsuarios
 from modelos.ConexionMYSQL import ConexionMYSQL
 import hashlib
@@ -17,6 +20,16 @@ class VentanaCrearUsuario(QDialog):
         self.controlador = ControladorUsuarios(self.conexion)
 
         layout = QVBoxLayout()
+
+        # 🔹 Botón de ayuda en layout horizontal superior
+        ayuda_layout = QHBoxLayout()
+        ayuda_layout.setAlignment(Qt.AlignRight)
+        btn_ayuda = QPushButton("?")
+        btn_ayuda.setFixedSize(30, 30)
+        btn_ayuda.setToolTip("Ayuda sobre esta pantalla")
+        btn_ayuda.clicked.connect(self.mostrar_ayuda)
+        ayuda_layout.addWidget(btn_ayuda)
+        layout.addLayout(ayuda_layout)
 
         self.inputNombre = QLineEdit()
         self.inputNombre.setPlaceholderText("Nombre")
@@ -41,6 +54,19 @@ class VentanaCrearUsuario(QDialog):
 
         self.setLayout(layout)
 
+    def mostrar_ayuda(self):
+        QMessageBox.information(
+            self,
+            "Ayuda - Crear Usuario",
+            "Desde esta ventana puedes crear manualmente un nuevo usuario.\n\n"
+            "Debes indicar:\n"
+            "- Nombre: Identificador único del usuario.\n"
+            "- Email: Debe ser válido.\n"
+            "- Contraseña: Se almacenará de forma segura.\n"
+            "- Rol: cliente, empleado o administrador.\n\n"
+            "💡 Los empleados y administradores deben ser creados solo por un administrador."
+        )
+
     def crear_usuario(self):
         nombre = self.inputNombre.text().strip()
         email = self.inputEmail.text().strip()
@@ -56,6 +82,6 @@ class VentanaCrearUsuario(QDialog):
         try:
             self.controlador.crear_usuario(nombre, email, contrasena_hash, rol)
             QMessageBox.information(self, "Éxito", "Usuario creado correctamente.")
-            self.accept()  # cierra la ventana
+            self.accept()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"No se pudo crear el usuario:\n{e}")
