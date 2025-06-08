@@ -62,6 +62,7 @@ class VentanaInvitado(QWidget):
         layout.addWidget(self.btnValorar)
 
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
+        self.btnCerrarSesion.setStyleSheet("background-color: red; color: white;")
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         layout.addWidget(self.btnCerrarSesion)
 
