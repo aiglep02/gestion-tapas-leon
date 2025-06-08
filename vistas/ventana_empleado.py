@@ -5,6 +5,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from modelos.dao.pedidoDAO import PedidoDAO
+from modelos.dao.tapaDAO import TapaDAO
 
 class VentanaEmpleado(QWidget):
     def __init__(self, nombre_empleado, coordinador):
@@ -13,9 +14,9 @@ class VentanaEmpleado(QWidget):
         self.setMinimumSize(900, 400)
         self.nombre_empleado = nombre_empleado
         self.pedidoDAO = PedidoDAO()
+        self.tapaDAO = TapaDAO()
         self.coordinador = coordinador
 
-        # Aplicar estilo visual desde estilo.qss
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
@@ -24,7 +25,6 @@ class VentanaEmpleado(QWidget):
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         layout.addWidget(self.btnCerrarSesion)
-
 
         mensaje = QLabel(f"Bienvenido, {self.nombre_empleado}")
         mensaje.setAlignment(Qt.AlignCenter)
@@ -37,29 +37,25 @@ class VentanaEmpleado(QWidget):
         self.setLayout(layout)
         self.cargar_pedidos()
 
-    #Botón cerrar sesión
     def cerrar_sesion(self):
         self.close()
         from vistas.login_view import VentanaLogin
         self.login = VentanaLogin(self.coordinador)
         self.login.show()
 
-    
     def cargar_pedidos(self):
         pedidos = self.pedidoDAO.obtener_pedidos_pendientes()
-
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(6)
         self.tabla.setHorizontalHeaderLabels(["Cliente", "Tapa", "Cantidad", "Estado", "Fecha", "Acciones"])
 
-        # Ajustar tamaño de columnas
         self.tabla.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
         self.tabla.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.tabla.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
         self.tabla.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
         self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
         self.tabla.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeToContents)
-        self.tabla.setColumnWidth(5, 220)  # ✅ Espacio suficiente para 3 botones
+        self.tabla.setColumnWidth(5, 220)
 
         for i, (id_pedido, cliente, tapa, cantidad, estado, fecha) in enumerate(pedidos):
             self.tabla.setItem(i, 0, QTableWidgetItem(cliente))
@@ -68,24 +64,20 @@ class VentanaEmpleado(QWidget):
             self.tabla.setItem(i, 3, QTableWidgetItem(estado))
             self.tabla.setItem(i, 4, QTableWidgetItem(str(fecha)))
 
-            # Botones de acción
             acciones_widget = QWidget()
             acciones_layout = QHBoxLayout()
 
             btn_preparar = QPushButton("Preparar")
-            btn_preparar.setObjectName("btnPreparar")
             btn_preparar.clicked.connect(lambda _, pid=id_pedido: self.actualizar_estado(pid, "en preparación"))
 
             btn_listo = QPushButton("Listo")
-            btn_listo.setObjectName("btnListo")
             btn_listo.clicked.connect(lambda _, pid=id_pedido: self.actualizar_estado(pid, "listo"))
 
             btn_entregado = QPushButton("Entregado")
-            btn_entregado.setObjectName("btnEntregado")
-            btn_entregado.clicked.connect(lambda _, pid=id_pedido: self.actualizar_estado(pid, "entregado"))
+            btn_entregado.clicked.connect(lambda _, pid=id_pedido, nombre=tapa, cant=cantidad: self.entregar_pedido(pid, nombre, cant))
 
             for btn in (btn_preparar, btn_listo, btn_entregado):
-                btn.setMinimumWidth(60)  # Opcional: para asegurar tamaño consistente
+                btn.setMinimumWidth(60)
                 acciones_layout.addWidget(btn)
 
             acciones_layout.setSpacing(6)
@@ -96,4 +88,10 @@ class VentanaEmpleado(QWidget):
     def actualizar_estado(self, id_pedido, nuevo_estado):
         exito = self.pedidoDAO.actualizar_estado_pedido(id_pedido, nuevo_estado)
         if exito:
+            self.cargar_pedidos()
+
+    def entregar_pedido(self, id_pedido, nombre_tapa, cantidad):
+        exito = self.pedidoDAO.actualizar_estado_pedido(id_pedido, "entregado")
+        if exito:
+            self.tapaDAO.reducir_stock_por_nombre(nombre_tapa, cantidad)
             self.cargar_pedidos()

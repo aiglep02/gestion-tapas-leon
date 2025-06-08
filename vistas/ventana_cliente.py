@@ -92,8 +92,13 @@ class VentanaClienteRegistrado(QWidget):
         self.comboTapas.clear()
         self.comboTapas.addItem("Selecciona una tapa", None)
 
-        for id_tapa, nombre in tapas:
-            self.comboTapas.addItem(nombre, id_tapa)
+        for id_tapa, nombre, stock in tapas:
+            if stock == 0:
+                texto = f"{nombre} (No disponible)"
+            else:
+                texto = f"{nombre} (Stock: {stock})"
+            self.comboTapas.addItem(texto, id_tapa if stock > 0 else None)
+
 
     def hacer_pedido(self):
         id_tapa = self.comboTapas.currentData()
@@ -101,6 +106,13 @@ class VentanaClienteRegistrado(QWidget):
 
         if not id_tapa:
             QMessageBox.warning(self, "Error", "Debes seleccionar una tapa.")
+            return
+
+        # Verificar que la tapa está disponible
+        tapas = self.tapaDAO.obtener_todas_las_tapas()
+        tapa_seleccionada = next((t for t in tapas if t[0] == id_tapa), None)
+        if tapa_seleccionada and tapa_seleccionada[2] == 0:
+            QMessageBox.warning(self, "No disponible", "Esta tapa no está disponible.")
             return
 
         pedido = PedidoVO(self.usuario_id, id_tapa, cantidad, estado="En preparación")
