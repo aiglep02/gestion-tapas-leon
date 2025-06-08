@@ -7,18 +7,24 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from modelos.dao.pedidoDAO import PedidoDAO
 
 class VentanaEmpleado(QWidget):
-    def __init__(self, nombre_empleado):
+    def __init__(self, nombre_empleado, coordinador):
         super().__init__()
         self.setWindowTitle("Panel de Empleado")
         self.setMinimumSize(900, 400)
         self.nombre_empleado = nombre_empleado
         self.pedidoDAO = PedidoDAO()
+        self.coordinador = coordinador
 
         # Aplicar estilo visual desde estilo.qss
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
         layout = QVBoxLayout()
+
+        self.btnCerrarSesion = QPushButton("Cerrar sesión")
+        self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
+        layout.addWidget(self.btnCerrarSesion)
+
 
         mensaje = QLabel(f"Bienvenido, {self.nombre_empleado}")
         mensaje.setAlignment(Qt.AlignCenter)
@@ -31,6 +37,14 @@ class VentanaEmpleado(QWidget):
         self.setLayout(layout)
         self.cargar_pedidos()
 
+    #Botón cerrar sesión
+    def cerrar_sesion(self):
+        self.close()
+        from vistas.login_view import VentanaLogin
+        self.login = VentanaLogin(self.coordinador)
+        self.login.show()
+
+    
     def cargar_pedidos(self):
         pedidos = self.pedidoDAO.obtener_pedidos_pendientes()
 

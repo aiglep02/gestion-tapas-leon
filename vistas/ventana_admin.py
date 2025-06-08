@@ -10,17 +10,23 @@ from controladores.ControladorEstadisticas import ControladorEstadisticas
 from vistas.ventana_admin_usuarios import VentanaAdminUsuarios  
 
 class VentanaAdmin(QWidget):
-    def __init__(self, nombre_admin):
+    def __init__(self, nombre_admin, coordinador):
         super().__init__()
         self.nombre_admin = nombre_admin
         self.setWindowTitle("Panel Administrador")
         self.setMinimumSize(500, 400)
+        self.coordinador = coordinador
 
         # Aplicar estilo
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
         layout = QVBoxLayout()
+
+        self.btnCerrarSesion = QPushButton("Cerrar sesión")
+        self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
+        layout.addWidget(self.btnCerrarSesion)
+
 
         # Botón de ayuda
         ayuda_layout = QHBoxLayout()
@@ -59,6 +65,13 @@ class VentanaAdmin(QWidget):
 
         self.setLayout(layout)
 
+    #Botón cerrar sesión
+    def cerrar_sesion(self):
+        self.close()
+        from vistas.login_view import VentanaLogin
+        self.login = VentanaLogin(self.coordinador)
+        self.login.show()
+    
     def mostrar_ayuda(self):
         QMessageBox.information(
             self,
