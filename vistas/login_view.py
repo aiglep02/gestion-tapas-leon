@@ -7,11 +7,11 @@ from vistas.login import Ui_Dialog
 import os
 
 class VentanaLogin(QDialog):
-    def __init__(self, coordinador):  
+    def __init__(self, coordinador):
         super().__init__()
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        self.coordinador = coordinador  
+        self.coordinador = coordinador
 
         # ✅ Establecer tamaño fijo razonable
         self.setFixedSize(500, 600)
@@ -53,7 +53,10 @@ class VentanaLogin(QDialog):
     def login(self):
         email = self.ui.lineEdit.text()
         contrasena = self.ui.lineEdit_2.text()
-        self.coordinador.login(email, contrasena, self)
+        index = self.ui.comboRol.currentIndex()
+        roles_internos = ["cliente", "empleado", "admin"]
+        rol_seleccionado = roles_internos[index]
+        self.coordinador.login(email, contrasena, rol_seleccionado, self)
 
     def mostrar_error(self, mensaje):
         self.ui.labelError.setText(mensaje)

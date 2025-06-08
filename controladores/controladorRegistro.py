@@ -42,6 +42,12 @@ class VentanaRegistro(QDialog):
             pixmap = pixmap.scaled(250, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             logo.setPixmap(pixmap)
 
+        # ✅ Forzar el ComboBox a "cliente" y desactivarlo
+        if hasattr(self.ui, "comboRol"):
+            self.ui.comboRol.clear()
+            self.ui.comboRol.addItem("cliente")
+            self.ui.comboRol.setEnabled(False)
+
         # ✅ Conectar botón de registro
         self.ui.btnRegistrarse.clicked.connect(self.registrar_usuario)
 
@@ -50,7 +56,7 @@ class VentanaRegistro(QDialog):
         email = self.ui.txtEmail.text()
         contrasena = self.ui.txtContrasena.text()
         confirmar = self.ui.txtContrasena2.text()
-        rol = self.ui.comboRol.currentText()
+        rol = "cliente"  # ⬅️ FORZAMOS el rol a "cliente" siempre
 
         # ✅ Validaciones básicas
         if not nombre or not email or not contrasena or not confirmar:
