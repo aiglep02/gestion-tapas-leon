@@ -84,3 +84,18 @@ class PedidoDAO:
         except Exception as e:
             print("Error al obtener tapas entregadas:", e)
             return []
+        
+    def actualizar_tapa_pedido(self, pedido_id, nueva_tapa_id):
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                UPDATE pedido
+                SET id_tapa = %s
+                WHERE id = %s AND estado = 'en preparación'
+            """, (nueva_tapa_id, pedido_id))
+            self.conn.commit()
+            return cursor.rowcount
+        except Exception as e:
+            print("Error al cambiar tapa:", e)
+            return 0
+

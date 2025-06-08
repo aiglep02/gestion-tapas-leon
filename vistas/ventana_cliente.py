@@ -15,7 +15,7 @@ class VentanaClienteRegistrado(QWidget):
     def __init__(self, usuario_id, nombre, coordinador):
         super().__init__()
         self.setWindowTitle("Panel Cliente Registrado")
-        self.setFixedSize(400, 300)
+        self.setFixedSize(400, 420)
         self.usuario_id = usuario_id
         self.nombre = nombre
         self.coordinador = coordinador

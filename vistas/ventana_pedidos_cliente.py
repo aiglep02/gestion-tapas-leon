@@ -1,22 +1,22 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QComboBox, QPushButton, QHBoxLayout, QMessageBox, QHeaderView
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from modelos.dao.pedidoDAO import PedidoDAO
+from modelos.dao.tapaDAO import TapaDAO
 
 class VentanaPedidosCliente(QWidget):
     def __init__(self, usuario_id):
         super().__init__()
         self.setWindowTitle("Pedidos del Cliente")
-        self.setFixedSize(600, 400)
+        self.setFixedSize(700, 400)
         self.usuario_id = usuario_id
-        
-        # Aplicar estilo visual desde estilo.qss
+
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
-        
+
         layout = QVBoxLayout()
 
-        mensaje = QLabel(f"Mis pedidos")
+        mensaje = QLabel("Mis pedidos")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)
@@ -26,19 +26,59 @@ class VentanaPedidosCliente(QWidget):
 
         self.setLayout(layout)
 
-        # Cargar los pedidos del cliente
         self.pedidoDAO = PedidoDAO()
+        self.tapaDAO = TapaDAO()
         self.cargar_pedidos()
 
     def cargar_pedidos(self):
         pedidos = self.pedidoDAO.obtener_pedidos_por_usuario(self.usuario_id)
 
         self.tabla.setRowCount(len(pedidos))
-        self.tabla.setColumnCount(4)
-        self.tabla.setHorizontalHeaderLabels(["ID", "Tapa", "Cantidad", "Estado"])
+        self.tabla.setColumnCount(5)
+        self.tabla.setHorizontalHeaderLabels(["ID", "Tapa", "Cantidad", "Estado", "Acciones"])
+
+        # Ajuste de columnas
+        self.tabla.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)  # ID
+        self.tabla.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)           # Tapa
+        self.tabla.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)  # Cantidad
+        self.tabla.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Estado
+        self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Acciones
+        self.tabla.setColumnWidth(4, 220)
 
         for i, (id_pedido, tapa, cantidad, estado) in enumerate(pedidos):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(id_pedido)))
             self.tabla.setItem(i, 1, QTableWidgetItem(tapa))
             self.tabla.setItem(i, 2, QTableWidgetItem(str(cantidad)))
             self.tabla.setItem(i, 3, QTableWidgetItem(estado))
+
+            if estado == "en preparación":
+                acciones = QWidget()
+                layout = QHBoxLayout()
+                layout.setContentsMargins(0, 0, 0, 0)
+                layout.setSpacing(4)
+
+                combo = QComboBox()
+                tapas = self.tapaDAO.obtener_todas_las_tapas()
+                for id_tapa, nombre, precio in tapas:
+                    combo.addItem(f"{nombre} ({precio}€)", id_tapa)
+                layout.addWidget(combo)
+
+                btn = QPushButton("Cambiar")
+                btn.setMinimumWidth(70)
+                btn.clicked.connect(lambda _, pid=id_pedido, cb=combo: self.cambiar_tapa(pid, cb))
+                layout.addWidget(btn)
+
+                acciones.setLayout(layout)
+                self.tabla.setCellWidget(i, 4, acciones)
+            else:
+                self.tabla.setItem(i, 4, QTableWidgetItem("-"))
+                                
+    def cambiar_tapa(self, pedido_id, combo):
+        nueva_tapa_id = combo.currentData()
+        if nueva_tapa_id:
+            actualizado = self.pedidoDAO.actualizar_tapa_pedido(pedido_id, nueva_tapa_id)
+            if actualizado:
+                QMessageBox.information(self, "Tapa cambiada", "El pedido ha sido actualizado.")
+                self.cargar_pedidos()
+            else:
+                QMessageBox.warning(self, "Error", "No se pudo actualizar la tapa.")
