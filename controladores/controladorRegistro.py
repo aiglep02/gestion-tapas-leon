@@ -121,8 +121,8 @@ class VentanaRegistro(QDialog):
 
 # ✅ Función para enviar código de verificación
 def enviar_codigo_verificacion(destinatario, nombre_usuario, codigo):
-    remitente = "trinialbaiglesias@gmail.com"
-    contraseña_app = "xzol rnji nwdh yxbq"
+    remitente = "gestion.tapas.leon@gmail.com"
+    contraseña_app = "nclp rqwb fyvd flxn"
 
     msg = EmailMessage()
     msg["Subject"] = "Código de verificación - Gestión de Tapas"
