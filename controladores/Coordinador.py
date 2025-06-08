@@ -53,9 +53,10 @@ class Coordinador:
         self.empleado.show()
 
     def abrir_panel_cliente(self, usuario_vo):
-        self.cliente = VentanaClienteRegistrado(usuario_vo.id_usuario, usuario_vo.nombre)
+        self.cliente = VentanaClienteRegistrado(usuario_vo.id_usuario, usuario_vo.nombre, self)
         self.cliente.setWindowTitle(f"Cliente - {usuario_vo.nombre}")
         self.cliente.show()
+
 
     def mostrar_vista_invitado(self):
         self.invitado = VentanaInvitado()
