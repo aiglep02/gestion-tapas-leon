@@ -1,26 +1,33 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
 from modelos.dao.pedidoDAO import PedidoDAO
 
 class VentanaPedidosCliente(QWidget):
     def __init__(self, usuario_id):
         super().__init__()
-        self.setWindowTitle("Tus pedidos")
-        self.setMinimumSize(500, 300)
-
+        self.setWindowTitle("Pedidos del Cliente")
+        self.setFixedSize(600, 400)
         self.usuario_id = usuario_id
-        self.pedidoDAO = PedidoDAO()
-
+        
+        # Aplicar estilo visual desde estilo.qss
+        with open("estilos/estilo.qss", "r") as f:
+            self.setStyleSheet(f.read())
+        
         layout = QVBoxLayout()
-        self.setLayout(layout)
 
-        titulo = QLabel("Historial de Pedidos")
-        titulo.setFont(QFont("Arial", 16))
-        layout.addWidget(titulo)
+        mensaje = QLabel(f"Pedidos de {self.usuario_id}")
+        mensaje.setAlignment(Qt.AlignCenter)
+        mensaje.setFont(QFont("Arial", 16))
+        layout.addWidget(mensaje)
 
         self.tabla = QTableWidget()
         layout.addWidget(self.tabla)
 
+        self.setLayout(layout)
+
+        # Cargar los pedidos del cliente
+        self.pedidoDAO = PedidoDAO()
         self.cargar_pedidos()
 
     def cargar_pedidos(self):
@@ -28,10 +35,10 @@ class VentanaPedidosCliente(QWidget):
 
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(4)
-        self.tabla.setHorizontalHeaderLabels(["Tapa", "Cantidad", "Estado", "Fecha"])
+        self.tabla.setHorizontalHeaderLabels(["ID", "Tapa", "Cantidad", "Estado"])
 
-        for i, (id, nombre, cantidad, estado, fecha) in enumerate(pedidos):
-            self.tabla.setItem(i, 0, QTableWidgetItem(nombre))
-            self.tabla.setItem(i, 1, QTableWidgetItem(str(cantidad)))
-            self.tabla.setItem(i, 2, QTableWidgetItem(estado))
-            self.tabla.setItem(i, 3, QTableWidgetItem(str(fecha)))
+        for i, (id_pedido, tapa, cantidad, estado) in enumerate(pedidos):
+            self.tabla.setItem(i, 0, QTableWidgetItem(str(id_pedido)))
+            self.tabla.setItem(i, 1, QTableWidgetItem(tapa))
+            self.tabla.setItem(i, 2, QTableWidgetItem(str(cantidad)))
+            self.tabla.setItem(i, 3, QTableWidgetItem(estado))

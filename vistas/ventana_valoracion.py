@@ -13,6 +13,10 @@ class VentanaValoracion(QWidget):
 
         self.pedidoDAO = PedidoDAO()
         self.valoracionDAO = ValoracionDAO()
+        
+        # Aplicar estilo visual desde estilo.qss
+        with open("estilos/estilo.qss", "r") as f:
+            self.setStyleSheet(f.read())
 
         layout = QVBoxLayout()
         self.setLayout(layout)
