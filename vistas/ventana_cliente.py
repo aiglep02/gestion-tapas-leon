@@ -9,6 +9,7 @@ from modelos.dao.pedidoDAO import PedidoDAO
 from modelos.vo.pedidoVO import PedidoVO
 from vistas.ventana_pedidos_cliente import VentanaPedidosCliente
 from vistas.ventana_valoracion import VentanaValoracion
+from vistas.ventana_estadisticas import VentanaEstadisticas
 
 class VentanaClienteRegistrado(QWidget):
     def __init__(self, usuario_id, nombre):
@@ -55,6 +56,16 @@ class VentanaClienteRegistrado(QWidget):
         layout.addWidget(self.btnValorar)
         self.btnValorar.clicked.connect(self.abrir_valoracion)
 
+        # Botón tapas más vendidas
+        self.btnMasVendidas = QPushButton("Ver tapas más vendidas")
+        layout.addWidget(self.btnMasVendidas)
+        self.btnMasVendidas.clicked.connect(self.mostrar_mas_vendidas)
+
+        # Botón tapas mejor valoradas
+        self.btnMejorValoradas = QPushButton("Ver tapas mejor valoradas")
+        layout.addWidget(self.btnMejorValoradas)
+        self.btnMejorValoradas.clicked.connect(self.mostrar_mejor_valoradas)
+
         self.setLayout(layout)
 
         # DAOs
@@ -93,4 +104,12 @@ class VentanaClienteRegistrado(QWidget):
     def abrir_valoracion(self):
         self.ventana_valoracion = VentanaValoracion(self.usuario_id)
         self.ventana_valoracion.show()
+        
+    def mostrar_mas_vendidas(self):
+        self.estadistica = VentanaEstadisticas("mas_vendidas", modo="usuario")
+        self.estadistica.exec_()
 
+
+    def mostrar_mejor_valoradas(self):
+        self.estadistica = VentanaEstadisticas("mejor_valoradas")
+        self.estadistica.exec_()
