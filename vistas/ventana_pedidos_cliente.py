@@ -16,7 +16,7 @@ class VentanaPedidosCliente(QWidget):
         
         layout = QVBoxLayout()
 
-        mensaje = QLabel(f"Pedidos de {self.usuario_id}")
+        mensaje = QLabel(f"Mis pedidos")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)
