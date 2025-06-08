@@ -76,7 +76,7 @@ class VentanaClienteRegistrado(QWidget):
 
         self.btnHacerPedido.clicked.connect(self.hacer_pedido)
 
-        #Botón cerrar sesión
+        # Botón cerrar sesión
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         layout.addWidget(self.btnCerrarSesion)
@@ -87,15 +87,13 @@ class VentanaClienteRegistrado(QWidget):
         self.login = VentanaLogin(self.coordinador)
         self.login.show()
 
-    
     def cargar_tapas(self):
         tapas = self.tapaDAO.obtener_todas_las_tapas()
         self.comboTapas.clear()
         self.comboTapas.addItem("Selecciona una tapa", None)
 
-        for id_tapa, nombre, precio in tapas:
-            texto = f"{nombre} ({float(precio):.2f}€)"
-            self.comboTapas.addItem(texto, id_tapa)
+        for id_tapa, nombre in tapas:
+            self.comboTapas.addItem(nombre, id_tapa)
 
     def hacer_pedido(self):
         id_tapa = self.comboTapas.currentData()
@@ -121,7 +119,6 @@ class VentanaClienteRegistrado(QWidget):
     def mostrar_mas_vendidas(self):
         self.estadistica = VentanaEstadisticas("mas_vendidas", modo="usuario")
         self.estadistica.exec_()
-
 
     def mostrar_mejor_valoradas(self):
         self.estadistica = VentanaEstadisticas("mejor_valoradas")

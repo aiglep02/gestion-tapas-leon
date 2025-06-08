@@ -8,7 +8,7 @@ class TapaDAO:
 
     def obtener_todas_las_tapas(self):
         try:
-            self.cursor.execute("SELECT id, nombre, precio FROM Tapa WHERE stock > 0")
+            self.cursor.execute("SELECT id, nombre FROM Tapa WHERE stock > 0")
             return self.cursor.fetchall()
         except Exception as e:
             print("Error al obtener tapas:", e)
@@ -17,13 +17,11 @@ class TapaDAO:
     def insertar_tapa(self, tapaVO):
         try:
             self.cursor.execute(
-                "INSERT INTO Tapa (nombre, descripcion, precio, stock) VALUES (%s, %s, %s, %s)",
-                (tapaVO.nombre, tapaVO.descripcion, tapaVO.precio, tapaVO.stock)
+                "INSERT INTO Tapa (nombre, descripcion, stock) VALUES (%s, %s, %s)",
+                (tapaVO.nombre, tapaVO.descripcion, tapaVO.stock)
             )
             self.conn.commit()
             return True
         except Exception as e:
             print("Error al insertar tapa:", e)
             return False
-
-

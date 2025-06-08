@@ -61,8 +61,8 @@ class VentanaPedidosCliente(QWidget):
 
                 combo = QComboBox()
                 tapas = self.tapaDAO.obtener_todas_las_tapas()
-                for id_tapa, nombre, precio in tapas:
-                    combo.addItem(f"{nombre} ({precio}€)", id_tapa)
+                for id_tapa, nombre in tapas:
+                    combo.addItem(f"{nombre}", id_tapa)
                 layout.addWidget(combo)
 
                 btn_cambiar = QPushButton("Cambiar")
