@@ -24,3 +24,11 @@ class ControladorUsuarios:
         cursor.execute("UPDATE usuario SET rol = %s WHERE id = %s", (nuevo_rol, usuario_id))
         self.db.commit()
         return cursor.rowcount
+    
+    def crear_usuario(self, nombre, email, contrasena_hash, rol):
+        cursor = self.db.cursor()
+        cursor.execute(
+            "INSERT INTO usuario (nombre, email, contraseña, rol) VALUES (%s, %s, %s, %s)",
+            (nombre, email, contrasena_hash, rol)
+        )
+        self.db.commit()

@@ -1,8 +1,11 @@
 from PyQt5.QtWidgets import QDialog, QMessageBox, QTableWidgetItem
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from vistas.ui_admin_usuarios import Ui_AdminUsuarios
 from controladores.ControladorUsuarios import ControladorUsuarios
 from modelos.ConexionMYSQL import ConexionMYSQL
-import os
+
 
 class VentanaAdminUsuarios(QDialog):
     def __init__(self):
@@ -21,11 +24,12 @@ class VentanaAdminUsuarios(QDialog):
         self.controlador = ControladorUsuarios(self.conexion)
 
         # Conectar señales de botones
-        self.ui.Actualizar.clicked.connect(self.actualizar_usuario)  # <- nuevo método
+        self.ui.Actualizar.clicked.connect(self.actualizar_usuario)
         self.ui.Eliminar.clicked.connect(self.eliminar_usuario)
-        # Eliminar funcionalidad del botón "Rol"
-        self.ui.CambiarRol.setEnabled(False)
-        self.ui.CambiarRol.setVisible(False)
+
+        # Botón para abrir la ventana de creación de usuarios
+        if hasattr(self.ui, "btnAbrirCrearUsuario"):
+            self.ui.btnAbrirCrearUsuario.clicked.connect(self.abrir_ventana_crear_usuario)
 
         # Cargar usuarios al iniciar
         self.cargar_usuarios()
@@ -50,7 +54,12 @@ class VentanaAdminUsuarios(QDialog):
     def eliminar_usuario(self):
         usuario_id = self.obtener_usuario_seleccionado()
         if usuario_id:
-            confirm = QMessageBox.question(self, "Confirmar", "¿Eliminar este usuario?", QMessageBox.Yes | QMessageBox.No)
+            confirm = QMessageBox.question(
+                self,
+                "Confirmar",
+                "¿Eliminar este usuario?",
+                QMessageBox.Yes | QMessageBox.No
+            )
             if confirm == QMessageBox.Yes:
                 self.controlador.eliminar_usuario(usuario_id)
                 self.cargar_usuarios()
@@ -68,3 +77,12 @@ class VentanaAdminUsuarios(QDialog):
             self.cargar_usuarios()
         else:
             QMessageBox.warning(self, "Error", "No se pudo actualizar el rol.")
+
+    def abrir_ventana_crear_usuario(self):
+        try:
+            from vistas.ventana_crear_usuario import VentanaCrearUsuario
+            self.ventana_crear = VentanaCrearUsuario()
+            self.ventana_crear.exec_()
+            self.cargar_usuarios()
+        except ImportError as e:
+            QMessageBox.critical(self, "Error", f"No se pudo cargar la ventana de creación de usuario:\n{e}")
