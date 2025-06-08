@@ -98,4 +98,13 @@ class PedidoDAO:
         except Exception as e:
             print("Error al cambiar tapa:", e)
             return 0
-
+        
+    def eliminar_pedido(self, pedido_id):
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("DELETE FROM pedido WHERE id = %s AND estado = 'en preparación'", (pedido_id,))
+            self.conn.commit()
+            return cursor.rowcount
+        except Exception as e:
+            print("Error al eliminar pedido:", e)
+            return 0

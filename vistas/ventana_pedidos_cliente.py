@@ -33,6 +33,8 @@ class VentanaPedidosCliente(QWidget):
     def cargar_pedidos(self):
         pedidos = self.pedidoDAO.obtener_pedidos_por_usuario(self.usuario_id)
 
+        self.tabla.clearContents()        # Limpia contenido anterior (widgets incluidos)
+        self.tabla.setRowCount(0)         # Elimina filas viejas
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(5)
         self.tabla.setHorizontalHeaderLabels(["ID", "Tapa", "Cantidad", "Estado", "Acciones"])
@@ -43,7 +45,7 @@ class VentanaPedidosCliente(QWidget):
         self.tabla.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)  # Cantidad
         self.tabla.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Estado
         self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Acciones
-        self.tabla.setColumnWidth(4, 220)
+        self.tabla.setColumnWidth(4, 260)
 
         for i, (id_pedido, tapa, cantidad, estado) in enumerate(pedidos):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(id_pedido)))
@@ -63,15 +65,37 @@ class VentanaPedidosCliente(QWidget):
                     combo.addItem(f"{nombre} ({precio}€)", id_tapa)
                 layout.addWidget(combo)
 
-                btn = QPushButton("Cambiar")
-                btn.setMinimumWidth(70)
-                btn.clicked.connect(lambda _, pid=id_pedido, cb=combo: self.cambiar_tapa(pid, cb))
-                layout.addWidget(btn)
+                btn_cambiar = QPushButton("Cambiar")
+                btn_cambiar.setMinimumWidth(70)
+                btn_cambiar.clicked.connect(lambda _, pid=id_pedido, cb=combo: self.cambiar_tapa(pid, cb))
+                layout.addWidget(btn_cambiar)
+
+                btn_eliminar = QPushButton("Eliminar")
+                btn_eliminar.setMinimumWidth(70)
+                btn_eliminar.clicked.connect(lambda _, pid=id_pedido: self.eliminar_pedido(pid))
+                layout.addWidget(btn_eliminar)
 
                 acciones.setLayout(layout)
                 self.tabla.setCellWidget(i, 4, acciones)
             else:
                 self.tabla.setItem(i, 4, QTableWidgetItem("-"))
+
+
+    def eliminar_pedido(self, pedido_id):
+        confirm = QMessageBox.question(
+            self,
+            "Eliminar pedido",
+            "¿Estás seguro de que quieres eliminar este pedido?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if confirm == QMessageBox.Yes:
+            eliminado = self.pedidoDAO.eliminar_pedido(pedido_id)
+            if eliminado:
+                QMessageBox.information(self, "Eliminado", "El pedido ha sido eliminado correctamente.")
+                self.cargar_pedidos()
+            else:
+                QMessageBox.warning(self, "Error", "No se pudo eliminar el pedido.")
+
                                 
     def cambiar_tapa(self, pedido_id, combo):
         nueva_tapa_id = combo.currentData()
