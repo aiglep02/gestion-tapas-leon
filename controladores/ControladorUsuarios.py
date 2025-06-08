@@ -11,13 +11,17 @@ class ControladorUsuarios:
 
     def eliminar_usuario(self, usuario_id):
         cursor = self.db.cursor()
-        # Eliminar primero los pedidos relacionados
+        # Eliminar primero valoraciones asociadas
+        cursor.execute("DELETE FROM valoracion WHERE id_usuario = %s", (usuario_id,))
+        # Eliminar lineas de pedido relacionadas con sus pedidos
         cursor.execute("DELETE FROM lineapedido WHERE pedido_id IN (SELECT id FROM pedido WHERE usuario_id = %s)", (usuario_id,))
+        # Eliminar pedidos del usuario
         cursor.execute("DELETE FROM pedido WHERE usuario_id = %s", (usuario_id,))
-        # Luego el usuario
+        # Eliminar el propio usuario
         cursor.execute("DELETE FROM usuario WHERE id = %s", (usuario_id,))
         self.db.commit()
         return cursor.rowcount
+
 
     def actualizar_rol_usuario(self, usuario_id, nuevo_rol):
         cursor = self.db.cursor()
