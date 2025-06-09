@@ -6,12 +6,18 @@ class UsuarioDAO:
         self.db = conexion
 
     def verificar_credenciales(self, email, contrasena):
+        """
+        Verifica si un usuario con el email y contraseña hash existe.
+        Devuelve un UsuarioVO si existe, o None si no.
+        """
         cursor = self.db.cursor(dictionary=True)
-
-        # 🔐 Convertir a hash antes de comparar
         contrasena_hash = hashlib.sha256(contrasena.encode()).hexdigest()
 
-        sql = "SELECT id, nombre, email, rol FROM usuario WHERE email = %s AND contraseña = %s"
+        sql = """
+        SELECT id, nombre, email, rol 
+        FROM usuario 
+        WHERE email = %s AND contraseña = %s
+        """
         cursor.execute(sql, (email, contrasena_hash))
         fila = cursor.fetchone()
 
@@ -23,12 +29,21 @@ class UsuarioDAO:
                 rol=fila["rol"]
             )
         return None
+
     def email_existente(self, email):
+        """
+        Comprueba si ya existe un usuario con ese email.
+        """
         cursor = self.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM usuario WHERE email = %s", (email,))
-        return cursor.fetchone()[0] > 0
-    
+        resultado = cursor.fetchone()
+        return resultado[0] > 0 if resultado else False
+
     def nombre_existente(self, nombre):
+        """
+        Comprueba si ya existe un usuario con ese nombre.
+        """
         cursor = self.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM usuario WHERE nombre = %s", (nombre,))
-        return cursor.fetchone()[0] > 0
+        resultado = cursor.fetchone()
+        return resultado[0] > 0 if resultado else False
