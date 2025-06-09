@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QTableWidgetItem, QPushButton, QHBoxLayout, QMessageBox
 from vistas.ui_admin_usuarios import Ui_AdminUsuarios
 from controladores.ControladorAdminUsuarios import ControladorAdminUsuarios
+from vistas.ventana_crear_usuario import VentanaCrearUsuario
 
 class AdminUsuarios(QDialog):
     def __init__(self):
@@ -55,8 +56,8 @@ class AdminUsuarios(QDialog):
             self.cargar_usuarios()
 
     def abrir_crear_usuario(self):
-        QMessageBox.information(self, "Añadir usuario", "Funcionalidad pendiente de implementación.")
-
+        self.ventana_crear_usuario = VentanaCrearUsuario()
+        self.ventana_crear_usuario.exec_()  # porque es QDialog
     def cambiar_rol(self):
         fila = self.ui.tablaUsuarios.currentRow()
         nuevo_rol = self.ui.Rol.currentText()

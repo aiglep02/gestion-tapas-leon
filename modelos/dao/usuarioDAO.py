@@ -95,3 +95,13 @@ class UsuarioDAO:
         with self.db.cursor() as cursor:
             cursor.execute("UPDATE usuario SET rol = %s WHERE id = %s", (nuevo_rol, id_usuario))
         self.db.commit()
+        
+    def insertar_usuario_manual(self, nombre, email, contrasena_hash, rol):
+        cursor = self.db.cursor()
+        sql = """
+            INSERT INTO usuario (nombre, email, contraseña, rol)
+            VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(sql, (nombre, email, contrasena_hash, rol))
+        self.db.commit()
+        return cursor.lastrowid

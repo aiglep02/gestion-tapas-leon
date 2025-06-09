@@ -3,10 +3,8 @@ from PyQt5.QtWidgets import (
     QComboBox, QMessageBox, QHBoxLayout
 )
 from PyQt5.QtCore import Qt
-from controladores.ControladorUsuarios import ControladorUsuarios
-from modelos.ConexionMYSQL import ConexionMYSQL
-import hashlib
-import os
+from PyQt5.QtWidgets import QLineEdit
+from controladores.ControladorCrearUsuario import ControladorCrearUsuario
 
 class VentanaCrearUsuario(QDialog):
     def __init__(self):
@@ -17,12 +15,11 @@ class VentanaCrearUsuario(QDialog):
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        self.conexion = ConexionMYSQL()._conexion
-        self.controlador = ControladorUsuarios(self.conexion)
+        self.controlador = ControladorCrearUsuario()
 
         layout = QVBoxLayout()
 
-        # 🔹 Botón de ayuda en layout horizontal superior
+        # Botón de ayuda
         ayuda_layout = QHBoxLayout()
         ayuda_layout.setAlignment(Qt.AlignRight)
         btn_ayuda = QPushButton("?")
@@ -78,11 +75,12 @@ class VentanaCrearUsuario(QDialog):
             QMessageBox.warning(self, "Error", "Todos los campos son obligatorios.")
             return
 
-        contrasena_hash = hashlib.sha256(contrasena.encode()).hexdigest()
+        resultado = self.controlador.crear_usuario(nombre, email, contrasena, rol)
 
-        try:
-            self.controlador.crear_usuario(nombre, email, contrasena_hash, rol)
+        if resultado is None:
             QMessageBox.information(self, "Éxito", "Usuario creado correctamente.")
-            self.accept()
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"No se pudo crear el usuario:\n{e}")
+            self.inputNombre.clear()
+            self.inputEmail.clear()
+            self.inputContrasena.clear()
+        else:
+            QMessageBox.critical(self, "Error", f"No se pudo crear el usuario:\n{resultado}")
