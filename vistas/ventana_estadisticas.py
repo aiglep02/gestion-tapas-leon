@@ -36,6 +36,7 @@ class VentanaEstadisticas(QDialog):
         layout.addWidget(self.tabla)
         self.setLayout(layout)
 
+        # Controlador y estrategia
         self.controlador = ControladorEstadisticas()
 
         if tipo == "mas_vendidas":
@@ -45,18 +46,16 @@ class VentanaEstadisticas(QDialog):
 
             if modo == "usuario":
                 columnas = ["Tapa"]
-                self.tabla.setRowCount(len(datos))
                 self.tabla.setColumnCount(1)
                 self.tabla.setHorizontalHeaderLabels(columnas)
-
+                self.tabla.setRowCount(len(datos))
                 for i, fila in enumerate(datos):
                     self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
             else:
                 columnas = ["Tapa", "Total Pedidos"]
-                self.tabla.setRowCount(len(datos))
                 self.tabla.setColumnCount(2)
                 self.tabla.setHorizontalHeaderLabels(columnas)
-
+                self.tabla.setRowCount(len(datos))
                 for i, fila in enumerate(datos):
                     self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
                     self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["total_pedida"])))
@@ -64,12 +63,11 @@ class VentanaEstadisticas(QDialog):
         elif tipo == "mejor_valoradas":
             self.setWindowTitle("Tapas mejor valoradas")
             self.controlador.set_estrategia(EstadisticaTopValoradas())
-            columnas = ["Tapa", "Puntuación Media"]
             datos = self.controlador.calcular_estadisticas()
-            self.tabla.setRowCount(len(datos))
+            columnas = ["Tapa", "Puntuación Media"]
             self.tabla.setColumnCount(2)
             self.tabla.setHorizontalHeaderLabels(columnas)
-
+            self.tabla.setRowCount(len(datos))
             for i, fila in enumerate(datos):
                 self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
                 self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["puntuacion_media"])))
