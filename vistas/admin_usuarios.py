@@ -52,8 +52,22 @@ class AdminUsuarios(QDialog):
         fila = self.ui.tablaUsuarios.currentRow()
         if fila >= 0:
             id_usuario = int(self.ui.tablaUsuarios.item(fila, 0).text())
-            self.controlador.eliminar_usuario(id_usuario)
-            self.cargar_usuarios()
+
+            confirm = QMessageBox.question(
+                self,
+                "Confirmar eliminación",
+                "¿Estás seguro de que deseas eliminar este usuario?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+
+            if confirm == QMessageBox.Yes:
+                try:
+                    self.controlador.eliminar_usuario(id_usuario)
+                    QMessageBox.information(self, "Éxito", "Usuario eliminado correctamente.")
+                    self.cargar_usuarios()
+                except Exception as e:
+                    QMessageBox.warning(self, "No se puede eliminar", str(e))
+
 
     def abrir_crear_usuario(self):
         self.ventana_crear_usuario = VentanaCrearUsuario()

@@ -105,3 +105,12 @@ class UsuarioDAO:
         cursor.execute(sql, (nombre, email, contrasena_hash, rol))
         self.db.commit()
         return cursor.lastrowid
+    
+    def obtener_pedidos_por_usuario(self, id_usuario):
+        try:
+            with self.db.cursor() as cursor:
+                cursor.execute("SELECT id FROM pedido WHERE usuario_id = %s", (id_usuario,))
+                return cursor.fetchall()
+        except Exception as e:
+            print("Error al comprobar pedidos del usuario:", e)
+            return []
