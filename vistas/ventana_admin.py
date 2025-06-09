@@ -70,7 +70,7 @@ class VentanaAdmin(QWidget):
         from vistas.login_view import VentanaLogin
         self.login = VentanaLogin(self.coordinador)
         self.login.show()
-    
+
     def mostrar_ayuda(self):
         QMessageBox.information(
             self,
@@ -92,8 +92,8 @@ class VentanaAdmin(QWidget):
         self.tabla.setHorizontalHeaderLabels(["Tapa", "Total Pedidos"])
 
         for i, fila in enumerate(resultados):
-            self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
-            self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["total_pedida"])))
+            self.tabla.setItem(i, 0, QTableWidgetItem(fila.nombre))
+            self.tabla.setItem(i, 1, QTableWidgetItem(str(fila.total_pedida)))
 
     def mostrar_valoradas(self):
         controlador = ControladorEstadisticas()
@@ -105,8 +105,8 @@ class VentanaAdmin(QWidget):
         self.tabla.setHorizontalHeaderLabels(["Tapa", "Puntuación Media"])
 
         for i, fila in enumerate(resultados):
-            self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
-            self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["puntuacion_media"])))
+            self.tabla.setItem(i, 0, QTableWidgetItem(fila.nombre))
+            self.tabla.setItem(i, 1, QTableWidgetItem(str(fila.puntuacion_media)))
 
     def abrir_gestion_usuarios(self):
         self.ventana_usuarios = AdminUsuarios()

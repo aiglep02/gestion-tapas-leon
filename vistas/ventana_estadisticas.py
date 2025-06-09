@@ -2,10 +2,10 @@ from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QTableWidget, QTableWidgetItem,
     QPushButton, QMessageBox, QHBoxLayout
 )
+from PyQt5.QtCore import Qt
 from estrategias.EstadisticaTopTapas import EstadisticaTopTapas
 from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
 from controladores.ControladorEstadisticas import ControladorEstadisticas
-from PyQt5.QtCore import Qt
 
 class VentanaEstadisticas(QDialog):
     def __init__(self, tipo, modo="admin"):
@@ -49,16 +49,16 @@ class VentanaEstadisticas(QDialog):
                 self.tabla.setColumnCount(1)
                 self.tabla.setHorizontalHeaderLabels(columnas)
                 self.tabla.setRowCount(len(datos))
-                for i, fila in enumerate(datos):
-                    self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
+                for i, estadistica in enumerate(datos):
+                    self.tabla.setItem(i, 0, QTableWidgetItem(estadistica.nombre))
             else:
                 columnas = ["Tapa", "Total Pedidos"]
                 self.tabla.setColumnCount(2)
                 self.tabla.setHorizontalHeaderLabels(columnas)
                 self.tabla.setRowCount(len(datos))
-                for i, fila in enumerate(datos):
-                    self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
-                    self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["total_pedida"])))
+                for i, estadistica in enumerate(datos):
+                    self.tabla.setItem(i, 0, QTableWidgetItem(estadistica.nombre))
+                    self.tabla.setItem(i, 1, QTableWidgetItem(str(estadistica.total_pedida)))
 
         elif tipo == "mejor_valoradas":
             self.setWindowTitle("Tapas mejor valoradas")
@@ -68,9 +68,9 @@ class VentanaEstadisticas(QDialog):
             self.tabla.setColumnCount(2)
             self.tabla.setHorizontalHeaderLabels(columnas)
             self.tabla.setRowCount(len(datos))
-            for i, fila in enumerate(datos):
-                self.tabla.setItem(i, 0, QTableWidgetItem(fila["nombre"]))
-                self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["puntuacion_media"])))
+            for i, estadistica in enumerate(datos):
+                self.tabla.setItem(i, 0, QTableWidgetItem(estadistica.nombre))
+                self.tabla.setItem(i, 1, QTableWidgetItem(str(estadistica.puntuacion_media)))
 
     def mostrar_ayuda(self):
         if self.tipo == "mas_vendidas":

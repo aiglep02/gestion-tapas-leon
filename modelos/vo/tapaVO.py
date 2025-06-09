@@ -1,8 +1,9 @@
 class TapaVO:
-    def __init__(self, id_tapa=None, nombre="", descripcion="", precio=0.0, stock=0, imagen=None):
+    def __init__(self, id_tapa=None, nombre=None, descripcion=None, stock=None):
         self.id_tapa = id_tapa
         self.nombre = nombre
         self.descripcion = descripcion
-        self.precio = precio
         self.stock = stock
-        self.imagen = imagen
+
+    def __repr__(self):
+        return f"<TapaVO id_tapa={self.id_tapa}, nombre={self.nombre}, stock={self.stock}>"

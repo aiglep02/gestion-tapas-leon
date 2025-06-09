@@ -21,15 +21,22 @@ class ClienteService:
         Devuelve un mensaje de éxito o error.
         """
         tapas = self.tapa_dao.obtener_todas_las_tapas()
-        tapa = next((t for t in tapas if t[0] == id_tapa), None)
+        # Cambiado para acceder a atributo id_tapa y stock del VO
+        tapa = next((t for t in tapas if t.id_tapa == id_tapa), None)
 
         if tapa is None:
             return False, "Tapa no válida."
 
-        if tapa[2] == 0:
+        if tapa.stock == 0:
             return False, "Esta tapa no está disponible."
 
-        pedido = PedidoVO(id_usuario, id_tapa, cantidad, estado="En preparación")
-        self.pedido_dao.insertar_pedido(pedido)
+        if cantidad > tapa.stock:
+            return False, f"Solo hay {tapa.stock} unidades disponibles."
+
+        pedido = PedidoVO(id_usuario=id_usuario, id_tapa=id_tapa, cantidad=cantidad, estado="En preparación")
+        id_pedido = self.pedido_dao.insertar_pedido(pedido)
+
+        if id_pedido is None:
+            return False, "Error al enviar el pedido."
 
         return True, "Tu pedido ha sido enviado a la cocina."

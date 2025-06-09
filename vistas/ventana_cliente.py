@@ -5,6 +5,7 @@ from controladores.ControladorClienteRegistrado import ControladorClienteRegistr
 from vistas.ventana_pedidos_cliente import VentanaPedidosCliente
 from vistas.ventana_valoracion import VentanaValoracion
 from vistas.ventana_estadisticas import VentanaEstadisticas
+from modelos.logica.ClienteService import ClienteService
 
 class VentanaClienteRegistrado(QWidget):
     def __init__(self, usuario_id, nombre, coordinador):
@@ -15,6 +16,7 @@ class VentanaClienteRegistrado(QWidget):
         self.nombre = nombre
         self.coordinador = coordinador
         self.controlador = ControladorClienteRegistrado()
+        self.service = ClienteService()
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
@@ -93,13 +95,17 @@ class VentanaClienteRegistrado(QWidget):
         )
 
     def cargar_tapas(self):
-        tapas = self.controlador.obtener_tapas_disponibles()
+        tapas = self.service.obtener_tapas_disponibles()
         self.comboTapas.clear()
         self.comboTapas.addItem("Selecciona una tapa", None)
 
-        for id_tapa, nombre, stock in tapas:
-            texto = f"{nombre} (No disponible)" if stock == 0 else f"{nombre} (Stock: {stock})"
-            self.comboTapas.addItem(texto, id_tapa if stock > 0 else None)
+        for tapa in tapas:
+            if tapa.stock == 0:
+                texto = f"{tapa.nombre} (No disponible)"
+                self.comboTapas.addItem(texto, None)
+            else:
+                texto = f"{tapa.nombre} (Stock: {tapa.stock})"
+                self.comboTapas.addItem(texto, tapa.id_tapa)
 
     def hacer_pedido(self):
         id_tapa = self.comboTapas.currentData()

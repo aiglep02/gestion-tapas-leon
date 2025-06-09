@@ -39,8 +39,11 @@ class VentanaPedidosCliente(QWidget):
 
         self.setLayout(layout)
 
+        # Instanciar DAOs
         self.pedidoDAO = PedidoDAO()
         self.tapaDAO = TapaDAO()
+
+        # Cargar datos en la tabla
         self.cargar_pedidos()
 
     def mostrar_ayuda(self):
@@ -56,9 +59,9 @@ class VentanaPedidosCliente(QWidget):
 
     def cargar_pedidos(self):
         pedidos = self.pedidoDAO.obtener_pedidos_por_usuario(self.usuario_id)
+        tapas = self.tapaDAO.obtener_todas_las_tapas()  # Para mostrar nombre en lugar de ID
 
         self.tabla.clearContents()
-        self.tabla.setRowCount(0)
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(5)
         self.tabla.setHorizontalHeaderLabels(["ID", "Tapa", "Cantidad", "Estado", "Acciones"])
@@ -70,32 +73,35 @@ class VentanaPedidosCliente(QWidget):
         self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
         self.tabla.setColumnWidth(4, 260)
 
-        for i, (id_pedido, tapa, cantidad, estado) in enumerate(pedidos):
-            self.tabla.setItem(i, 0, QTableWidgetItem(str(id_pedido)))
-            self.tabla.setItem(i, 1, QTableWidgetItem(tapa))
-            self.tabla.setItem(i, 2, QTableWidgetItem(str(cantidad)))
-            self.tabla.setItem(i, 3, QTableWidgetItem(estado))
+        for i, pedido in enumerate(pedidos):
+            self.tabla.setItem(i, 0, QTableWidgetItem(str(pedido.id)))
 
-            if estado == "en preparación":
+            # Buscar nombre de tapa según id_tapa
+            nombre_tapa = next((t.nombre for t in tapas if t.id_tapa == pedido.id_tapa), "Desconocida")
+            self.tabla.setItem(i, 1, QTableWidgetItem(nombre_tapa))
+
+            self.tabla.setItem(i, 2, QTableWidgetItem(str(pedido.cantidad)))
+            self.tabla.setItem(i, 3, QTableWidgetItem(pedido.estado))
+
+            if pedido.estado == "en preparación":
                 acciones = QWidget()
                 layout = QHBoxLayout()
                 layout.setContentsMargins(0, 0, 0, 0)
                 layout.setSpacing(4)
 
                 combo = QComboBox()
-                tapas = self.tapaDAO.obtener_todas_las_tapas()
-                for id_tapa, nombre, _ in tapas:
-                    combo.addItem(f"{nombre}", id_tapa)
+                for tapa in tapas:
+                    combo.addItem(tapa.nombre, tapa.id_tapa)
                 layout.addWidget(combo)
 
                 btn_cambiar = QPushButton("Cambiar")
                 btn_cambiar.setMinimumWidth(70)
-                btn_cambiar.clicked.connect(lambda _, pid=id_pedido, cb=combo: self.cambiar_tapa(pid, cb))
+                btn_cambiar.clicked.connect(lambda _, pid=pedido.id, cb=combo: self.cambiar_tapa(pid, cb))
                 layout.addWidget(btn_cambiar)
 
                 btn_eliminar = QPushButton("Eliminar")
                 btn_eliminar.setMinimumWidth(70)
-                btn_eliminar.clicked.connect(lambda _, pid=id_pedido: self.eliminar_pedido(pid))
+                btn_eliminar.clicked.connect(lambda _, pid=pedido.id: self.eliminar_pedido(pid))
                 layout.addWidget(btn_eliminar)
 
                 acciones.setLayout(layout)
