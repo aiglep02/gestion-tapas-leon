@@ -1,12 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QComboBox, QPushButton, QSpinBox, QMessageBox, QHBoxLayout
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from modelos.dao.tapaDAO import TapaDAO 
-from modelos.dao.pedidoDAO import PedidoDAO
-from modelos.vo.pedidoVO import PedidoVO
+from controladores.ControladorClienteRegistrado import ControladorClienteRegistrado
 from vistas.ventana_pedidos_cliente import VentanaPedidosCliente
 from vistas.ventana_valoracion import VentanaValoracion
 from vistas.ventana_estadisticas import VentanaEstadisticas
@@ -19,16 +14,12 @@ class VentanaClienteRegistrado(QWidget):
         self.usuario_id = usuario_id
         self.nombre = nombre
         self.coordinador = coordinador
+        self.controlador = ControladorClienteRegistrado()
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
         layout = QVBoxLayout()
-
-        # Mensaje de bienvenida
-        mensaje = QLabel(f"Bienvenido, {self.nombre}")
-        mensaje.setAlignment(Qt.AlignCenter)
-        mensaje.setFont(QFont("Arial", 16))
 
         # Botón de ayuda
         ayuda_layout = QHBoxLayout()
@@ -38,58 +29,50 @@ class VentanaClienteRegistrado(QWidget):
         boton_ayuda.setToolTip("Ayuda sobre esta pantalla")
         boton_ayuda.clicked.connect(self.mostrar_ayuda)
         ayuda_layout.addWidget(boton_ayuda)
-
         layout.addLayout(ayuda_layout)
+
+        # Bienvenida
+        mensaje = QLabel(f"Bienvenido, {self.nombre}")
+        mensaje.setAlignment(Qt.AlignCenter)
+        mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)
 
-        # ComboBox para tapas
+        # UI de tapas
         self.comboTapas = QComboBox()
         layout.addWidget(self.comboTapas)
 
-        # SpinBox para cantidad
         self.spinCantidad = QSpinBox()
         self.spinCantidad.setMinimum(1)
         self.spinCantidad.setMaximum(10)
         layout.addWidget(self.spinCantidad)
 
-        # Botón para hacer pedido
         self.btnHacerPedido = QPushButton("Hacer pedido")
+        self.btnHacerPedido.clicked.connect(self.hacer_pedido)
         layout.addWidget(self.btnHacerPedido)
 
-        # Botón ver historial de pedidos
         self.btnVerPedidos = QPushButton("Ver mis pedidos")
-        layout.addWidget(self.btnVerPedidos)
         self.btnVerPedidos.clicked.connect(self.abrir_historial)
+        layout.addWidget(self.btnVerPedidos)
 
-        # Botón valorar tapas
         self.btnValorar = QPushButton("Valorar tapas")
-        layout.addWidget(self.btnValorar)
         self.btnValorar.clicked.connect(self.abrir_valoracion)
+        layout.addWidget(self.btnValorar)
 
-        # Botón tapas más vendidas
         self.btnMasVendidas = QPushButton("Ver tapas más vendidas")
-        layout.addWidget(self.btnMasVendidas)
         self.btnMasVendidas.clicked.connect(self.mostrar_mas_vendidas)
+        layout.addWidget(self.btnMasVendidas)
 
-        # Botón tapas mejor valoradas
         self.btnMejorValoradas = QPushButton("Ver tapas mejor valoradas")
-        layout.addWidget(self.btnMejorValoradas)
         self.btnMejorValoradas.clicked.connect(self.mostrar_mejor_valoradas)
+        layout.addWidget(self.btnMejorValoradas)
 
-        # Botón cerrar sesión
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
         self.btnCerrarSesion.setStyleSheet("background-color: red; color: white;")
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         layout.addWidget(self.btnCerrarSesion)
 
         self.setLayout(layout)
-
-        # DAOs
-        self.tapaDAO = TapaDAO()
-        self.pedidoDAO = PedidoDAO()
         self.cargar_tapas()
-
-        self.btnHacerPedido.clicked.connect(self.hacer_pedido)
 
     def cerrar_sesion(self):
         self.close()
@@ -110,15 +93,12 @@ class VentanaClienteRegistrado(QWidget):
         )
 
     def cargar_tapas(self):
-        tapas = self.tapaDAO.obtener_todas_las_tapas()
+        tapas = self.controlador.obtener_tapas_disponibles()
         self.comboTapas.clear()
         self.comboTapas.addItem("Selecciona una tapa", None)
 
         for id_tapa, nombre, stock in tapas:
-            if stock == 0:
-                texto = f"{nombre} (No disponible)"
-            else:
-                texto = f"{nombre} (Stock: {stock})"
+            texto = f"{nombre} (No disponible)" if stock == 0 else f"{nombre} (Stock: {stock})"
             self.comboTapas.addItem(texto, id_tapa if stock > 0 else None)
 
     def hacer_pedido(self):
@@ -129,16 +109,11 @@ class VentanaClienteRegistrado(QWidget):
             QMessageBox.warning(self, "Error", "Debes seleccionar una tapa.")
             return
 
-        tapas = self.tapaDAO.obtener_todas_las_tapas()
-        tapa_seleccionada = next((t for t in tapas if t[0] == id_tapa), None)
-        if tapa_seleccionada and tapa_seleccionada[2] == 0:
-            QMessageBox.warning(self, "No disponible", "Esta tapa no está disponible.")
-            return
-
-        pedido = PedidoVO(self.usuario_id, id_tapa, cantidad, estado="En preparación")
-        self.pedidoDAO.insertar_pedido(pedido)
-
-        QMessageBox.information(self, "Pedido realizado", "Tu pedido ha sido enviado a la cocina.")
+        exito, mensaje = self.controlador.hacer_pedido(self.usuario_id, id_tapa, cantidad)
+        if exito:
+            QMessageBox.information(self, "Pedido realizado", mensaje)
+        else:
+            QMessageBox.warning(self, "Error", mensaje)
 
     def abrir_historial(self):
         self.ventana_historial = VentanaPedidosCliente(self.usuario_id)
