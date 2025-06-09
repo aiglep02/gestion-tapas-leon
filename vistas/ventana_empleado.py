@@ -66,34 +66,34 @@ class VentanaEmpleado(QWidget):
         pedidos = self.controlador.obtener_pedidos_pendientes()
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(6)
-        self.tabla.setHorizontalHeaderLabels(["Cliente", "Tapa", "Cantidad", "Estado", "Fecha", "Acciones"])
+        self.tabla.setHorizontalHeaderLabels(["ID Pedido", "ID Usuario", "ID Tapa", "Cantidad", "Estado", "Acciones"])
 
         self.tabla.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.tabla.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.tabla.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
         self.tabla.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
         self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
         self.tabla.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeToContents)
         self.tabla.setColumnWidth(5, 220)
 
-        for i, (id_pedido, cliente, tapa, cantidad, estado, fecha) in enumerate(pedidos):
-            self.tabla.setItem(i, 0, QTableWidgetItem(cliente))
-            self.tabla.setItem(i, 1, QTableWidgetItem(tapa))
-            self.tabla.setItem(i, 2, QTableWidgetItem(str(cantidad)))
-            self.tabla.setItem(i, 3, QTableWidgetItem(estado))
-            self.tabla.setItem(i, 4, QTableWidgetItem(str(fecha)))
+        for i, pedido in enumerate(pedidos):
+            self.tabla.setItem(i, 0, QTableWidgetItem(str(pedido.id)))
+            self.tabla.setItem(i, 1, QTableWidgetItem(str(pedido.id_usuario)))
+            self.tabla.setItem(i, 2, QTableWidgetItem(str(pedido.id_tapa)))
+            self.tabla.setItem(i, 3, QTableWidgetItem(str(pedido.cantidad)))
+            self.tabla.setItem(i, 4, QTableWidgetItem(str(pedido.estado)))
 
             acciones_widget = QWidget()
             acciones_layout = QHBoxLayout()
 
             btn_preparar = QPushButton("Preparar")
-            btn_preparar.clicked.connect(lambda _, pid=id_pedido: self.actualizar_estado(pid, "en preparación"))
+            btn_preparar.clicked.connect(lambda _, pid=pedido.id: self.actualizar_estado(pid, "en preparación"))
 
             btn_listo = QPushButton("Listo")
-            btn_listo.clicked.connect(lambda _, pid=id_pedido: self.actualizar_estado(pid, "listo"))
+            btn_listo.clicked.connect(lambda _, pid=pedido.id: self.actualizar_estado(pid, "listo"))
 
             btn_entregado = QPushButton("Entregado")
-            btn_entregado.clicked.connect(lambda _, pid=id_pedido, nombre=tapa, cant=cantidad: self.entregar_pedido(pid, nombre, cant))
+            btn_entregado.clicked.connect(lambda _, pid=pedido.id, nombre=pedido.id_tapa, cant=pedido.cantidad: self.entregar_pedido(pid, nombre, cant))
 
             for btn in (btn_preparar, btn_listo, btn_entregado):
                 btn.setMinimumWidth(60)
