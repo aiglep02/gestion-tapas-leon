@@ -12,14 +12,14 @@ class TapaDAO:
                 cursor.execute("SELECT id, nombre, descripcion, stock FROM tapa")
                 filas = cursor.fetchall()
 
-            tapas = []
-            for fila in filas:
-                tapas.append(TapaVO(
+            tapas = [
+                TapaVO(
                     id_tapa=fila['id'],
                     nombre=fila['nombre'],
                     descripcion=fila.get('descripcion'),
                     stock=fila['stock']
-                ))
+                ) for fila in filas
+            ]
             return tapas
         except Exception as e:
             print("Error al obtener tapas:", e)
@@ -40,13 +40,13 @@ class TapaDAO:
                 """)
                 filas = cursor.fetchall()
 
-            estadisticas = []
-            for fila in filas:
-                estadisticas.append(EstadisticaVO(
+            estadisticas = [
+                EstadisticaVO(
                     nombre=fila['nombre'],
                     total_pedida=fila['total_pedida'],
                     puntuacion_media=fila['puntuacion_media']
-                ))
+                ) for fila in filas
+            ]
             return estadisticas
 
         except Exception as e:
