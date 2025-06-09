@@ -7,7 +7,7 @@ from PyQt5.QtGui import QFont
 from estrategias.EstadisticaTopTapas import EstadisticaTopTapas
 from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
 from controladores.ControladorEstadisticas import ControladorEstadisticas
-from vistas.ventana_admin_usuarios import VentanaAdminUsuarios  
+from vistas.admin_usuarios import AdminUsuarios
 
 class VentanaAdmin(QWidget):
     def __init__(self, nombre_admin, coordinador):
@@ -112,5 +112,5 @@ class VentanaAdmin(QWidget):
             self.tabla.setItem(i, 1, QTableWidgetItem(str(fila["puntuacion_media"])))
 
     def abrir_gestion_usuarios(self):
-        self.ventana_usuarios = VentanaAdminUsuarios()
+        self.ventana_usuarios = AdminUsuarios()
         self.ventana_usuarios.show()
