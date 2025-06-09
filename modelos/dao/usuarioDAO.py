@@ -47,3 +47,16 @@ class UsuarioDAO:
         cursor.execute("SELECT COUNT(*) FROM usuario WHERE nombre = %s", (nombre,))
         resultado = cursor.fetchone()
         return resultado[0] > 0 if resultado else False
+    
+    def insertar_usuario(self, usuario_vo, contrasena_hash):
+        """
+        Inserta un nuevo usuario con el hash de contraseña.
+        """
+        cursor = self.db.cursor()
+        sql = """
+            INSERT INTO usuario (nombre, email, contraseña, rol)
+            VALUES (%s, %s, %s, %s)
+        """
+        valores = (usuario_vo.nombre, usuario_vo.email, contrasena_hash, usuario_vo.rol)
+        cursor.execute(sql, valores)
+        self.db.commit()
