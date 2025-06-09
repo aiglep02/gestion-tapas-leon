@@ -66,13 +66,29 @@ class TapaDAO:
             print("Error al insertar tapa:", e)
             return False
 
-    def reducir_stock_por_nombre(self, nombre_tapa, cantidad):
+    def reducir_stock_por_id(self, id_tapa, cantidad):
         try:
             with self.conn.cursor() as cursor:
                 cursor.execute(
-                    "UPDATE tapa SET stock = stock - %s WHERE nombre = %s AND stock >= %s",
-                    (cantidad, nombre_tapa, cantidad)
+                    "SELECT stock FROM tapa WHERE id = %s",
+                    (id_tapa,)
+                )
+                fila = cursor.fetchone()
+                if not fila:
+                    print(f"[ERROR] No existe la tapa con ID '{id_tapa}'")
+                    return False
+                stock_actual = fila[0]
+
+                if stock_actual < cantidad:
+                    print(f"[ERROR] Stock insuficiente para la tapa ID '{id_tapa}': {stock_actual} < {cantidad}")
+                    return False
+
+                cursor.execute(
+                    "UPDATE tapa SET stock = stock - %s WHERE id = %s",
+                    (cantidad, id_tapa)
                 )
                 self.conn.commit()
+                return True
         except Exception as e:
             print(f"[ERROR] No se pudo reducir stock: {e}")
+            return False

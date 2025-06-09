@@ -15,6 +15,6 @@ class EmpleadoService:
     def entregar_pedido(self, id_pedido, nombre_tapa, cantidad):
         exito_estado = self.pedido_dao.actualizar_estado_pedido(id_pedido, "entregado")
         if exito_estado:
-            self.tapa_dao.reducir_stock_por_nombre(nombre_tapa, cantidad)
+            self.tapa_dao.reducir_stock_por_id(nombre_tapa, cantidad)
             return True
         return False

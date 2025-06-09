@@ -68,14 +68,6 @@ class VentanaEmpleado(QWidget):
         self.tabla.setColumnCount(6)
         self.tabla.setHorizontalHeaderLabels(["ID Pedido", "ID Usuario", "ID Tapa", "Cantidad", "Estado", "Acciones"])
 
-        self.tabla.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeToContents)
-        self.tabla.setColumnWidth(5, 220)
-
         for i, pedido in enumerate(pedidos):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(pedido.id)))
             self.tabla.setItem(i, 1, QTableWidgetItem(str(pedido.id_usuario)))
@@ -93,7 +85,8 @@ class VentanaEmpleado(QWidget):
             btn_listo.clicked.connect(lambda _, pid=pedido.id: self.actualizar_estado(pid, "listo"))
 
             btn_entregado = QPushButton("Entregado")
-            btn_entregado.clicked.connect(lambda _, pid=pedido.id, nombre=pedido.id_tapa, cant=pedido.cantidad: self.entregar_pedido(pid, nombre, cant))
+            # Cambio: ahora paso id_tapa correctamente para reducir stock por id
+            btn_entregado.clicked.connect(lambda _, pid=pedido.id, id_tapa=pedido.id_tapa, cant=pedido.cantidad: self.entregar_pedido(pid, id_tapa, cant))
 
             for btn in (btn_preparar, btn_listo, btn_entregado):
                 btn.setMinimumWidth(60)
@@ -109,7 +102,7 @@ class VentanaEmpleado(QWidget):
         if exito:
             self.cargar_pedidos()
 
-    def entregar_pedido(self, id_pedido, nombre_tapa, cantidad):
-        exito = self.controlador.entregar_pedido(id_pedido, nombre_tapa, cantidad)
+    def entregar_pedido(self, id_pedido, id_tapa, cantidad):
+        exito = self.controlador.entregar_pedido(id_pedido, id_tapa, cantidad)
         if exito:
             self.cargar_pedidos()

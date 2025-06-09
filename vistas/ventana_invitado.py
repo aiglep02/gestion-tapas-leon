@@ -76,6 +76,10 @@ class VentanaInvitado(QWidget):
 
         self.cargar_tapas()
 
+        # Asegurar que tapas_pedidas es un atributo estático de la clase VentanaValoracionInvitado
+        if not hasattr(VentanaValoracionInvitado, "tapas_pedidas"):
+            VentanaValoracionInvitado.tapas_pedidas = []
+
     def mostrar_ayuda(self):
         QMessageBox.information(
             self,
@@ -122,7 +126,8 @@ class VentanaInvitado(QWidget):
         self.estadistica.exec_()
 
     def abrir_valoracion(self):
-        self.ventana_valoracion = VentanaValoracionInvitado()
+        # Pasamos la lista estática como argumento
+        self.ventana_valoracion = VentanaValoracionInvitado(VentanaValoracionInvitado.tapas_pedidas)
         self.ventana_valoracion.show()
 
     def cerrar_sesion(self):
