@@ -4,9 +4,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
-from modelos.dao.pedidoDAO import PedidoDAO
-from modelos.dao.valoracionDAO import ValoracionDAO
-from modelos.vo.valoracionVO import ValoracionVO
+from controladores.ControladorValoracion import ControladorValoracion
 
 class VentanaValoracion(QWidget):
     def __init__(self, usuario_id):
@@ -15,9 +13,8 @@ class VentanaValoracion(QWidget):
         self.setWindowTitle("Valorar Tapas")
         self.setMinimumSize(500, 300)
 
-        self.pedidoDAO = PedidoDAO()
-        self.valoracionDAO = ValoracionDAO()
-        
+        self.controlador = ControladorValoracion()
+
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
@@ -54,7 +51,6 @@ class VentanaValoracion(QWidget):
 
         self.btnEnviar = QPushButton("Enviar valoración")
         layout.addWidget(self.btnEnviar)
-
         self.btnEnviar.clicked.connect(self.enviar_valoracion)
 
         self.cargar_tapas_entregadas()
@@ -69,10 +65,10 @@ class VentanaValoracion(QWidget):
         )
 
     def cargar_tapas_entregadas(self):
-        pedidos = self.pedidoDAO.obtener_pedidos_entregados_por_usuario(self.usuario_id)
+        tapas = self.controlador.obtener_tapas_entregadas(self.usuario_id)
         self.comboTapas.clear()
-        for id_tapa, nombre in pedidos:
-            self.comboTapas.addItem(nombre, id_tapa)
+        for tapa in tapas:
+            self.comboTapas.addItem(tapa.nombre, tapa.id_tapa)
 
     def enviar_valoracion(self):
         id_tapa = self.comboTapas.currentData()
@@ -83,8 +79,7 @@ class VentanaValoracion(QWidget):
             QMessageBox.warning(self, "Error", "Debes seleccionar una tapa.")
             return
 
-        valoracion = ValoracionVO(self.usuario_id, id_tapa, puntuacion, comentario)
-        exito = self.valoracionDAO.insertar_valoracion(valoracion)
+        exito = self.controlador.enviar_valoracion(self.usuario_id, id_tapa, puntuacion, comentario)
 
         if exito:
             QMessageBox.information(self, "Gracias", "Valoración enviada correctamente.")
