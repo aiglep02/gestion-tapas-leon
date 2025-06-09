@@ -32,7 +32,7 @@ class AdminUsuarios(QDialog):
 
         # Conectar eventos
         self.ui.Eliminar.clicked.connect(self.eliminar_usuario)
-        self.ui.btnActualizar.clicked.connect(self.cargar_usuarios)
+        self.ui.btnActualizar.clicked.connect(self.cambiar_rol)
         self.ui.btnAbrirCrearUsuario.clicked.connect(self.abrir_crear_usuario)
         self.ui.Rol.setCurrentIndex(0)
 
@@ -57,7 +57,11 @@ class AdminUsuarios(QDialog):
 
     def abrir_crear_usuario(self):
         self.ventana_crear_usuario = VentanaCrearUsuario()
-        self.ventana_crear_usuario.exec_()  # porque es QDialog
+        resultado = self.ventana_crear_usuario.exec_()
+        if resultado == 1:  
+            self.cargar_usuarios()
+        
+    
     def cambiar_rol(self):
         fila = self.ui.tablaUsuarios.currentRow()
         nuevo_rol = self.ui.Rol.currentText()

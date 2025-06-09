@@ -12,3 +12,7 @@ class ControladorEmpleado:
 
     def entregar_pedido(self, id_pedido, nombre_tapa, cantidad):
         return self.service.entregar_pedido(id_pedido, nombre_tapa, cantidad)
+    
+    def obtener_nombre_tapa(self, id_tapa):
+        return self.modelo.obtener_nombre_tapa(id_tapa)
+

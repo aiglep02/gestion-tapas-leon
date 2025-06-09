@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTableWidget, QTableWi
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from controladores.ControladorEmpleado import ControladorEmpleado
+from modelos.dao.tapaDAO import TapaDAO 
 
 class VentanaEmpleado(QWidget):
     def __init__(self, nombre_empleado, coordinador):
@@ -11,6 +12,7 @@ class VentanaEmpleado(QWidget):
         self.nombre_empleado = nombre_empleado
         self.coordinador = coordinador
         self.controlador = ControladorEmpleado()
+        self.tapa_dao = TapaDAO()
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
@@ -64,37 +66,50 @@ class VentanaEmpleado(QWidget):
 
     def cargar_pedidos(self):
         pedidos = self.controlador.obtener_pedidos_pendientes()
+        tapas = self.tapa_dao.obtener_todas_las_tapas()
+        mapa_tapas = {tapa.id_tapa: tapa.nombre for tapa in tapas}
+
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(6)
-        self.tabla.setHorizontalHeaderLabels(["ID Pedido", "ID Usuario", "ID Tapa", "Cantidad", "Estado", "Acciones"])
+        self.tabla.setHorizontalHeaderLabels(["ID Pedido", "ID Usuario", "Tapa", "Cantidad", "Estado", "Acciones"])
+
+        for col in range(6):
+            self.tabla.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeToContents)
+        self.tabla.setColumnWidth(5, 300)
 
         for i, pedido in enumerate(pedidos):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(pedido.id)))
             self.tabla.setItem(i, 1, QTableWidgetItem(str(pedido.id_usuario)))
-            self.tabla.setItem(i, 2, QTableWidgetItem(str(pedido.id_tapa)))
+
+            # Mostrar nombre de la tapa
+            nombre_tapa = mapa_tapas.get(pedido.id_tapa, "Tapa desconocida")
+            self.tabla.setItem(i, 2, QTableWidgetItem(nombre_tapa))
+
             self.tabla.setItem(i, 3, QTableWidgetItem(str(pedido.cantidad)))
             self.tabla.setItem(i, 4, QTableWidgetItem(str(pedido.estado)))
 
             acciones_widget = QWidget()
-            acciones_layout = QHBoxLayout()
+            acciones_layout = QHBoxLayout(acciones_widget)
+            acciones_layout.setContentsMargins(5, 2, 5, 2)
+            acciones_layout.setSpacing(8)
 
             btn_preparar = QPushButton("Preparar")
+            btn_preparar.setMinimumWidth(80)
             btn_preparar.clicked.connect(lambda _, pid=pedido.id: self.actualizar_estado(pid, "en preparación"))
 
             btn_listo = QPushButton("Listo")
+            btn_listo.setMinimumWidth(60)
             btn_listo.clicked.connect(lambda _, pid=pedido.id: self.actualizar_estado(pid, "listo"))
 
             btn_entregado = QPushButton("Entregado")
-            # Cambio: ahora paso id_tapa correctamente para reducir stock por id
-            btn_entregado.clicked.connect(lambda _, pid=pedido.id, id_tapa=pedido.id_tapa, cant=pedido.cantidad: self.entregar_pedido(pid, id_tapa, cant))
+            btn_entregado.setMinimumWidth(80)
+            btn_entregado.clicked.connect(lambda _, pid=pedido.id, tid=pedido.id_tapa, cant=pedido.cantidad: self.entregar_pedido(pid, tid, cant))
 
-            for btn in (btn_preparar, btn_listo, btn_entregado):
-                btn.setMinimumWidth(60)
-                acciones_layout.addWidget(btn)
+            acciones_layout.addWidget(btn_preparar)
+            acciones_layout.addWidget(btn_listo)
+            acciones_layout.addWidget(btn_entregado)
+            acciones_layout.addStretch()
 
-            acciones_layout.setSpacing(6)
-            acciones_layout.setContentsMargins(0, 0, 0, 0)
-            acciones_widget.setLayout(acciones_layout)
             self.tabla.setCellWidget(i, 5, acciones_widget)
 
     def actualizar_estado(self, id_pedido, nuevo_estado):

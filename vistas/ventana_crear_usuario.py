@@ -79,8 +79,6 @@ class VentanaCrearUsuario(QDialog):
 
         if resultado is None:
             QMessageBox.information(self, "Éxito", "Usuario creado correctamente.")
-            self.inputNombre.clear()
-            self.inputEmail.clear()
-            self.inputContrasena.clear()
+            self.accept()
         else:
             QMessageBox.critical(self, "Error", f"No se pudo crear el usuario:\n{resultado}")
