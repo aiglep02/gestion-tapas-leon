@@ -1,11 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QHeaderView, QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from modelos.dao.pedidoDAO import PedidoDAO
-from modelos.dao.tapaDAO import TapaDAO
+from controladores.ControladorEmpleado import ControladorEmpleado
 
 class VentanaEmpleado(QWidget):
     def __init__(self, nombre_empleado, coordinador):
@@ -13,9 +9,8 @@ class VentanaEmpleado(QWidget):
         self.setWindowTitle("Panel de Empleado")
         self.setMinimumSize(900, 400)
         self.nombre_empleado = nombre_empleado
-        self.pedidoDAO = PedidoDAO()
-        self.tapaDAO = TapaDAO()
         self.coordinador = coordinador
+        self.controlador = ControladorEmpleado()
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
@@ -43,6 +38,7 @@ class VentanaEmpleado(QWidget):
         mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)
 
+        # Tabla de pedidos
         self.tabla = QTableWidget()
         layout.addWidget(self.tabla)
 
@@ -67,7 +63,7 @@ class VentanaEmpleado(QWidget):
         )
 
     def cargar_pedidos(self):
-        pedidos = self.pedidoDAO.obtener_pedidos_pendientes()
+        pedidos = self.controlador.obtener_pedidos_pendientes()
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(6)
         self.tabla.setHorizontalHeaderLabels(["Cliente", "Tapa", "Cantidad", "Estado", "Fecha", "Acciones"])
@@ -109,12 +105,11 @@ class VentanaEmpleado(QWidget):
             self.tabla.setCellWidget(i, 5, acciones_widget)
 
     def actualizar_estado(self, id_pedido, nuevo_estado):
-        exito = self.pedidoDAO.actualizar_estado_pedido(id_pedido, nuevo_estado)
+        exito = self.controlador.actualizar_estado_pedido(id_pedido, nuevo_estado)
         if exito:
             self.cargar_pedidos()
 
     def entregar_pedido(self, id_pedido, nombre_tapa, cantidad):
-        exito = self.pedidoDAO.actualizar_estado_pedido(id_pedido, "entregado")
+        exito = self.controlador.entregar_pedido(id_pedido, nombre_tapa, cantidad)
         if exito:
-            self.tapaDAO.reducir_stock_por_nombre(nombre_tapa, cantidad)
             self.cargar_pedidos()
