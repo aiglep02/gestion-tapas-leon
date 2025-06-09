@@ -4,8 +4,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
-from modelos.dao.pedidoDAO import PedidoDAO
-from modelos.dao.tapaDAO import TapaDAO
+from controladores.ControladorPedido import ControladorPedido
+from controladores.ControladorTapa import ControladorTapa
 
 class VentanaPedidosCliente(QWidget):
     def __init__(self, usuario_id):
@@ -39,9 +39,9 @@ class VentanaPedidosCliente(QWidget):
 
         self.setLayout(layout)
 
-        # Instanciar DAOs
-        self.pedidoDAO = PedidoDAO()
-        self.tapaDAO = TapaDAO()
+        # Instanciar controladores
+        self.controlador_pedidos = ControladorPedido()
+        self.controlador_tapas = ControladorTapa()
 
         # Cargar datos en la tabla
         self.cargar_pedidos()
@@ -58,8 +58,8 @@ class VentanaPedidosCliente(QWidget):
         )
 
     def cargar_pedidos(self):
-        pedidos = self.pedidoDAO.obtener_pedidos_por_usuario(self.usuario_id)
-        tapas = self.tapaDAO.obtener_todas_las_tapas()  # Para mostrar nombre en lugar de ID
+        pedidos = self.controlador_pedidos.obtener_pedidos_usuario(self.usuario_id)
+        tapas = self.controlador_tapas.obtener_tapas()
 
         self.tabla.clearContents()
         self.tabla.setRowCount(len(pedidos))
@@ -76,7 +76,6 @@ class VentanaPedidosCliente(QWidget):
         for i, pedido in enumerate(pedidos):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(pedido.id)))
 
-            # Buscar nombre de tapa según id_tapa
             nombre_tapa = next((t.nombre for t in tapas if t.id_tapa == pedido.id_tapa), "Desconocida")
             self.tabla.setItem(i, 1, QTableWidgetItem(nombre_tapa))
 
@@ -117,7 +116,7 @@ class VentanaPedidosCliente(QWidget):
             QMessageBox.Yes | QMessageBox.No
         )
         if confirm == QMessageBox.Yes:
-            eliminado = self.pedidoDAO.eliminar_pedido(pedido_id)
+            eliminado = self.controlador_pedidos.eliminar_pedido(pedido_id)
             if eliminado:
                 QMessageBox.information(self, "Eliminado", "El pedido ha sido eliminado correctamente.")
                 self.cargar_pedidos()
@@ -127,7 +126,7 @@ class VentanaPedidosCliente(QWidget):
     def cambiar_tapa(self, pedido_id, combo):
         nueva_tapa_id = combo.currentData()
         if nueva_tapa_id:
-            actualizado = self.pedidoDAO.actualizar_tapa_pedido(pedido_id, nueva_tapa_id)
+            actualizado = self.controlador_pedidos.cambiar_tapa_pedido(pedido_id, nueva_tapa_id)
             if actualizado:
                 QMessageBox.information(self, "Tapa cambiada", "El pedido ha sido actualizado.")
                 self.cargar_pedidos()
