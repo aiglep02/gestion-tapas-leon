@@ -15,7 +15,7 @@ class PedidoDAO:
                 INSERT INTO pedido (usuario_id, id_tapa, cantidad, estado)
                 VALUES (%s, %s, %s, %s)
             """, (
-                pedidoVO.id_usuario,  # Puede ser None
+                pedidoVO.id_usuario,
                 pedidoVO.id_tapa,
                 pedidoVO.cantidad,
                 pedidoVO.estado
@@ -29,7 +29,6 @@ class PedidoDAO:
         except Exception as e:
             print("Error al insertar pedido:", e)
             return None
-
 
     def obtener_pedidos_por_usuario(self, usuario_id):
         try:
@@ -68,7 +67,7 @@ class PedidoDAO:
                 WHERE id = %s
             """, (estado, pedido_id))
             self.conn.commit()
-            return True  # 
+            return True
         except Exception as e:
             print("Error al actualizar estado del pedido:", e)
             return False
@@ -109,3 +108,23 @@ class PedidoDAO:
         except Exception as e:
             print("Error al eliminar pedido:", e)
             return 0
+
+    def obtener_datos_para_estadisticas(self):
+        try:
+            cursor = self.conn.cursor(dictionary=True)  
+            cursor.execute("""
+                SELECT 
+                    t.nombre, 
+                    IFNULL(SUM(p.cantidad), 0) AS total_pedida,
+                    IFNULL(AVG(v.puntuacion), 0) AS puntuacion_media
+                FROM tapa t
+                LEFT JOIN pedido p ON t.id = p.id_tapa
+                LEFT JOIN valoracion v ON t.id = v.id_tapa
+                GROUP BY t.id
+            """)
+            resultados = cursor.fetchall()
+            cursor.close()
+            return resultados
+        except Exception as e:
+            print("Error al obtener datos para estadísticas:", e)
+            return []

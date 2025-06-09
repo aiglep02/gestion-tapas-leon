@@ -1,4 +1,5 @@
 from modelos.ConexionMYSQL import conectar
+from modelos.dao.pedidoDAO import PedidoDAO
 
 class ControladorEstadisticas:
     def __init__(self):
@@ -9,7 +10,8 @@ class ControladorEstadisticas:
 
     def calcular_estadisticas(self):
         if self.estrategia:
-            conexion = conectar()  
-            return self.estrategia.calcular(conexion)
+            dao = PedidoDAO()
+            datos = dao.obtener_datos_para_estadisticas()
+            return self.estrategia.calcular(datos)
         else:
             return []

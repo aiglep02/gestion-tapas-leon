@@ -28,7 +28,6 @@ class VentanaAdmin(QWidget):
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         layout.addWidget(self.btnCerrarSesion)
 
-
         # Botón de ayuda
         ayuda_layout = QHBoxLayout()
         ayuda_layout.setAlignment(Qt.AlignRight)
@@ -54,7 +53,7 @@ class VentanaAdmin(QWidget):
         self.btnVerValoradas.clicked.connect(self.mostrar_valoradas)
         layout.addWidget(self.btnVerValoradas)
 
-        # 🔹 Botón para gestionar usuarios
+        # Botón para gestionar usuarios
         self.btnGestionUsuarios = QPushButton("Gestionar usuarios")
         self.btnGestionUsuarios.setObjectName("btnGestionUsuarios")
         self.btnGestionUsuarios.clicked.connect(self.abrir_gestion_usuarios)
@@ -66,7 +65,6 @@ class VentanaAdmin(QWidget):
 
         self.setLayout(layout)
 
-    #Botón cerrar sesión
     def cerrar_sesion(self):
         self.close()
         from vistas.login_view import VentanaLogin
@@ -75,15 +73,14 @@ class VentanaAdmin(QWidget):
     
     def mostrar_ayuda(self):
         QMessageBox.information(
-                self,
-                "Ayuda - Panel Administrador",
-                "En este panel puedes realizar las siguientes acciones:\n"
-                "- Consultar las tapas más pedidas por los clientes\n"
-                "- Ver las tapas mejor valoradas\n"
-                "- Acceder a la gestión de usuarios registrados\n"
-                "- Cerrar sesión para volver al login"
-            )
-
+            self,
+            "Ayuda - Panel Administrador",
+            "En este panel puedes realizar las siguientes acciones:\n"
+            "- Consultar las tapas más pedidas por los clientes\n"
+            "- Ver las tapas mejor valoradas\n"
+            "- Acceder a la gestión de usuarios registrados\n"
+            "- Cerrar sesión para volver al login"
+        )
 
     def mostrar_estadisticas(self):
         controlador = ControladorEstadisticas()
