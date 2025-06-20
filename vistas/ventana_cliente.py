@@ -5,18 +5,16 @@ from controladores.ControladorClienteRegistrado import ControladorClienteRegistr
 from vistas.ventana_pedidos_cliente import VentanaPedidosCliente
 from vistas.ventana_valoracion import VentanaValoracion
 from vistas.ventana_estadisticas import VentanaEstadisticas
-from modelos.logica.ClienteService import ClienteService
 
 class VentanaClienteRegistrado(QWidget):
-    def __init__(self, usuario_id, nombre, coordinador):
+    def __init__(self, usuario_id, nombre, coordinador, conexion):
         super().__init__()
         self.setWindowTitle("Panel Cliente Registrado")
         self.setFixedSize(400, 420)
         self.usuario_id = usuario_id
         self.nombre = nombre
         self.coordinador = coordinador
-        self.controlador = ControladorClienteRegistrado()
-        self.service = ClienteService()
+        self.controlador = ControladorClienteRegistrado(conexion)
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
@@ -95,7 +93,7 @@ class VentanaClienteRegistrado(QWidget):
         )
 
     def cargar_tapas(self):
-        tapas = self.service.obtener_tapas_disponibles()
+        tapas = self.controlador.obtener_tapas_disponibles()
         self.comboTapas.clear()
         self.comboTapas.addItem("Selecciona una tapa", None)
 
@@ -128,7 +126,7 @@ class VentanaClienteRegistrado(QWidget):
     def abrir_valoracion(self):
         self.ventana_valoracion = VentanaValoracion(self.usuario_id)
         self.ventana_valoracion.show()
-        
+
     def mostrar_mas_vendidas(self):
         self.estadistica = VentanaEstadisticas("mas_vendidas", modo="usuario")
         self.estadistica.exec_()

@@ -1,13 +1,11 @@
-# modelos/logica/ClienteService.py
-
 from modelos.dao.tapaDAO import TapaDAO
 from modelos.dao.pedidoDAO import PedidoDAO
 from modelos.vo.pedidoVO import PedidoVO
 
 class ClienteService:
-    def __init__(self):
-        self.tapa_dao = TapaDAO()
-        self.pedido_dao = PedidoDAO()
+    def __init__(self, conexion):
+        self.tapa_dao = TapaDAO(conexion)
+        self.pedido_dao = PedidoDAO(conexion)
 
     def obtener_tapas_disponibles(self):
         """
@@ -21,7 +19,6 @@ class ClienteService:
         Devuelve un mensaje de éxito o error.
         """
         tapas = self.tapa_dao.obtener_todas_las_tapas()
-        # Cambiado para acceder a atributo id_tapa y stock del VO
         tapa = next((t for t in tapas if t.id_tapa == id_tapa), None)
 
         if tapa is None:
