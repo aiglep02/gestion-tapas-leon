@@ -83,3 +83,25 @@ class TapaDAO:
         except Exception as e:
             print("Error al eliminar tapa:", e)
             return 0
+
+    def reducir_stock_por_id(self, id_tapa, cantidad):
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("UPDATE tapa SET stock = stock - ? WHERE id = ?", (cantidad, id_tapa))
+            self.conn.commit()
+            cursor.close()
+            return True
+        except Exception as e:
+            print("Error al reducir stock:", e)
+            return False
+
+    def obtener_nombre_por_id(self, id_tapa):
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT nombre FROM tapa WHERE id = ?", (id_tapa,))
+            resultado = cursor.fetchone()
+            cursor.close()
+            return resultado[0] if resultado else None
+        except Exception as e:
+            print("Error al obtener nombre de tapa:", e)
+            return None

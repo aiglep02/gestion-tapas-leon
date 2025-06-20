@@ -2,30 +2,26 @@ from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QTableWidget, QTableWi
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from controladores.ControladorEmpleado import ControladorEmpleado
-from modelos.dao.tapaDAO import TapaDAO 
 
 class VentanaEmpleado(QWidget):
-    def __init__(self, nombre_empleado, coordinador):
+    def __init__(self, nombre_empleado, coordinador, conexion):
         super().__init__()
         self.setWindowTitle("Panel de Empleado")
         self.setMinimumSize(900, 400)
         self.nombre_empleado = nombre_empleado
         self.coordinador = coordinador
-        self.controlador = ControladorEmpleado()
-        self.tapa_dao = TapaDAO()
+        self.controlador = ControladorEmpleado(conexion)
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
         layout = QVBoxLayout()
 
-        # Botón cerrar sesión
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
         self.btnCerrarSesion.setStyleSheet("background-color: red; color: white;")
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
         layout.addWidget(self.btnCerrarSesion)
 
-        # Botón ayuda
         ayuda_layout = QHBoxLayout()
         ayuda_layout.setAlignment(Qt.AlignRight)
         boton_ayuda = QPushButton("?")
@@ -34,13 +30,11 @@ class VentanaEmpleado(QWidget):
         ayuda_layout.addWidget(boton_ayuda)
         layout.addLayout(ayuda_layout)
 
-        # Mensaje bienvenida
         mensaje = QLabel(f"Bienvenido, {self.nombre_empleado}")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)
 
-        # Tabla de pedidos
         self.tabla = QTableWidget()
         layout.addWidget(self.tabla)
 
@@ -66,8 +60,6 @@ class VentanaEmpleado(QWidget):
 
     def cargar_pedidos(self):
         pedidos = self.controlador.obtener_pedidos_pendientes()
-        tapas = self.tapa_dao.obtener_todas_las_tapas()
-        mapa_tapas = {tapa.id_tapa: tapa.nombre for tapa in tapas}
 
         self.tabla.setRowCount(len(pedidos))
         self.tabla.setColumnCount(6)
@@ -81,8 +73,7 @@ class VentanaEmpleado(QWidget):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(pedido.id)))
             self.tabla.setItem(i, 1, QTableWidgetItem(str(pedido.id_usuario)))
 
-            # Mostrar nombre de la tapa
-            nombre_tapa = mapa_tapas.get(pedido.id_tapa, "Tapa desconocida")
+            nombre_tapa = self.controlador.obtener_nombre_tapa(pedido.id_tapa) or "Tapa desconocida"
             self.tabla.setItem(i, 2, QTableWidgetItem(nombre_tapa))
 
             self.tabla.setItem(i, 3, QTableWidgetItem(str(pedido.cantidad)))

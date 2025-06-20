@@ -1,8 +1,8 @@
 from modelos.logica.EmpleadoService import EmpleadoService
 
 class ControladorEmpleado:
-    def __init__(self):
-        self.service = EmpleadoService()
+    def __init__(self, conexion):
+        self.service = EmpleadoService(conexion)
 
     def obtener_pedidos_pendientes(self):
         return self.service.obtener_pedidos_pendientes()
@@ -12,7 +12,6 @@ class ControladorEmpleado:
 
     def entregar_pedido(self, id_pedido, nombre_tapa, cantidad):
         return self.service.entregar_pedido(id_pedido, nombre_tapa, cantidad)
-    
-    def obtener_nombre_tapa(self, id_tapa):
-        return self.modelo.obtener_nombre_tapa(id_tapa)
 
+    def obtener_nombre_tapa(self, id_tapa):
+        return self.service.obtener_nombre_tapa(id_tapa)
