@@ -1,11 +1,9 @@
-from modelos.ConexionMYSQL import conectar
 from modelos.dao.usuarioDAO import UsuarioDAO
 from modelos.vo.usuarioVO import UsuarioVO
 
 class AdminUsuarioService:
-    def __init__(self):
-        self.conexion = conectar()
-        self.usuario_dao = UsuarioDAO(self.conexion)
+    def __init__(self, conexion):
+        self.usuario_dao = UsuarioDAO(conexion)
 
     def obtener_todos_los_usuarios(self):
         """

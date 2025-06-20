@@ -4,18 +4,19 @@ from controladores.ControladorAdminUsuarios import ControladorAdminUsuarios
 from vistas.ventana_crear_usuario import VentanaCrearUsuario
 
 class AdminUsuarios(QDialog):
-    def __init__(self):
+    def __init__(self, conexion):
         super().__init__()
         self.ui = Ui_AdminUsuarios()
         self.ui.setupUi(self)
         self.setWindowTitle("Gestión de Usuarios")
+        self.conexion = conexion
 
         # Aplicar estilos
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        # Conectar con el controlador
-        self.controlador = ControladorAdminUsuarios()
+        # ✅ Conexión inyectada al controlador
+        self.controlador = ControladorAdminUsuarios(conexion)
 
         # Botón de ayuda
         boton_ayuda = QPushButton("?")
@@ -68,14 +69,13 @@ class AdminUsuarios(QDialog):
                 except Exception as e:
                     QMessageBox.warning(self, "No se puede eliminar", str(e))
 
-
     def abrir_crear_usuario(self):
-        self.ventana_crear_usuario = VentanaCrearUsuario()
+        # ✅ Pasa también la conexión a la ventana de crear usuario
+        self.ventana_crear_usuario = VentanaCrearUsuario(self.conexion)
         resultado = self.ventana_crear_usuario.exec_()
-        if resultado == 1:  
+        if resultado == 1:
             self.cargar_usuarios()
-        
-    
+
     def cambiar_rol(self):
         fila = self.ui.tablaUsuarios.currentRow()
         nuevo_rol = self.ui.Rol.currentText()

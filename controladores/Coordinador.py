@@ -7,9 +7,10 @@ from vistas.ventana_invitado import VentanaInvitado
 
 class Coordinador:
     def __init__(self, conexion):
-        self.login_controller = ControladorLogin()
+        self.conexion = conexion  # ✅ guardar conexión
+        self.login_controller = ControladorLogin(conexion)  # ✅ pasar conexión
         self.registro_ventana = VentanaRegistro(self)
-        self.intentos_fallidos = 0  # 👈 inicializar contador
+        self.intentos_fallidos = 0
 
     def login(self, email, contrasena, rol_ingresado, login_vista):
         resultado = self.login_controller.verificar_credenciales(email, contrasena, rol_ingresado)
@@ -32,7 +33,6 @@ class Coordinador:
                 exit(0)
             return
 
-        # ✅ Login correcto → reseteamos contador
         self.intentos_fallidos = 0
         login_vista.close()
         print(f"[INFO] Login correcto: {usuario_vo.nombre} ({usuario_vo.rol})")
@@ -46,17 +46,17 @@ class Coordinador:
             self.abrir_panel_cliente(usuario_vo)
 
     def abrir_panel_admin(self, usuario_vo):
-        self.admin = VentanaAdmin(usuario_vo.nombre, self)
+        self.admin = VentanaAdmin(usuario_vo.nombre, self, self.conexion)
         self.admin.setWindowTitle(f"Admin - {usuario_vo.nombre}")
         self.admin.show()
 
     def abrir_panel_empleado(self, usuario_vo):
-        self.empleado = VentanaEmpleado(usuario_vo.nombre, self)
+        self.empleado = VentanaEmpleado(usuario_vo.nombre, self, self.conexion)
         self.empleado.setWindowTitle(f"Empleado - {usuario_vo.nombre}")
         self.empleado.show()
 
     def abrir_panel_cliente(self, usuario_vo):
-        self.cliente = VentanaClienteRegistrado(usuario_vo.id_usuario, usuario_vo.nombre, self)
+        self.cliente = VentanaClienteRegistrado(usuario_vo.id_usuario, usuario_vo.nombre, self, self.conexion)
         self.cliente.setWindowTitle(f"Cliente - {usuario_vo.nombre}")
         self.cliente.show()
 

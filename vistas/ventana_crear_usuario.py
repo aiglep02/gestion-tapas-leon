@@ -3,11 +3,10 @@ from PyQt5.QtWidgets import (
     QComboBox, QMessageBox, QHBoxLayout
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLineEdit
 from controladores.ControladorCrearUsuario import ControladorCrearUsuario
 
 class VentanaCrearUsuario(QDialog):
-    def __init__(self):
+    def __init__(self, conexion):
         super().__init__()
         self.setWindowTitle("Crear nuevo usuario")
         self.setFixedSize(300, 250)
@@ -15,7 +14,8 @@ class VentanaCrearUsuario(QDialog):
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        self.controlador = ControladorCrearUsuario()
+        # ✅ Recibe y usa la conexión correctamente
+        self.controlador = ControladorCrearUsuario(conexion)
 
         layout = QVBoxLayout()
 

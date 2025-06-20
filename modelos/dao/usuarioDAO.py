@@ -6,111 +6,92 @@ class UsuarioDAO:
         self.db = conexion
 
     def verificar_credenciales(self, email, contrasena):
-        """
-        Verifica si un usuario con el email y contraseña hash existe.
-        Devuelve un UsuarioVO si existe, o None si no.
-        """
         contrasena_hash = hashlib.sha256(contrasena.encode()).hexdigest()
-        sql = """
-        SELECT id, nombre, email, rol 
-        FROM usuario 
-        WHERE email = %s AND contraseña = %s
-        """
-        with self.db.cursor(dictionary=True) as cursor:
-            cursor.execute(sql, (email, contrasena_hash))
-            fila = cursor.fetchone()
-            # 🔒 Consumimos todos los resultados para evitar el error
-            while cursor.nextset():
-                pass
+        sql = "SELECT id, nombre, email, rol FROM usuario WHERE email = ? AND contraseña = ?"
+        cursor = self.db.cursor()
+        cursor.execute(sql, (email, contrasena_hash))
+        fila = cursor.fetchone()
+        cursor.close()
 
         if fila:
             return UsuarioVO(
-                id_usuario=fila["id"],
-                nombre=fila["nombre"],
-                email=fila["email"],
-                rol=fila["rol"]
+                id_usuario=fila[0],
+                nombre=fila[1],
+                email=fila[2],
+                rol=fila[3]
             )
         return None
 
-
     def email_existente(self, email):
-        """
-        Comprueba si ya existe un usuario con ese email.
-        """
-        with self.db.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM usuario WHERE email = %s", (email,))
-            resultado = cursor.fetchone()
+        cursor = self.db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM usuario WHERE email = ?", (email,))
+        resultado = cursor.fetchone()
+        cursor.close()
         return resultado[0] > 0 if resultado else False
 
     def nombre_existente(self, nombre):
-        """
-        Comprueba si ya existe un usuario con ese nombre.
-        """
-        with self.db.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM usuario WHERE nombre = %s", (nombre,))
-            resultado = cursor.fetchone()
+        cursor = self.db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM usuario WHERE nombre = ?", (nombre,))
+        resultado = cursor.fetchone()
+        cursor.close()
         return resultado[0] > 0 if resultado else False
 
     def insertar_usuario(self, usuario_vo, contrasena_hash):
-        """
-        Inserta un nuevo usuario con el hash de contraseña.
-        """
         sql = """
             INSERT INTO usuario (nombre, email, contraseña, rol)
-            VALUES (%s, %s, %s, %s)
+            VALUES (?, ?, ?, ?)
         """
         valores = (usuario_vo.nombre, usuario_vo.email, contrasena_hash, usuario_vo.rol)
-        with self.db.cursor() as cursor:
-            cursor.execute(sql, valores)
+        cursor = self.db.cursor()
+        cursor.execute(sql, valores)
         self.db.commit()
+        cursor.close()
 
     def obtener_todos(self):
-        """
-        Devuelve todos los usuarios como una lista de UsuarioVO.
-        """
-        with self.db.cursor(dictionary=True) as cursor:
-            cursor.execute("SELECT id, nombre, email, rol FROM usuario")
-            resultados = cursor.fetchall()
+        cursor = self.db.cursor()
+        cursor.execute("SELECT id, nombre, email, rol FROM usuario")
+        resultados = cursor.fetchall()
+        cursor.close()
         return [
             UsuarioVO(
-                id_usuario=row["id"],
-                nombre=row["nombre"],
-                email=row["email"],
-                rol=row["rol"]
+                id_usuario=row[0],
+                nombre=row[1],
+                email=row[2],
+                rol=row[3]
             ) for row in resultados
         ]
 
     def eliminar_por_id(self, id_usuario):
-        """
-        Elimina un usuario dado su ID.
-        """
-        with self.db.cursor() as cursor:
-            cursor.execute("DELETE FROM usuario WHERE id = %s", (id_usuario,))
+        cursor = self.db.cursor()
+        cursor.execute("DELETE FROM usuario WHERE id = ?", (id_usuario,))
         self.db.commit()
+        cursor.close()
 
     def actualizar_rol(self, id_usuario, nuevo_rol):
-        """
-        Actualiza el rol de un usuario por su ID.
-        """
-        with self.db.cursor() as cursor:
-            cursor.execute("UPDATE usuario SET rol = %s WHERE id = %s", (nuevo_rol, id_usuario))
+        cursor = self.db.cursor()
+        cursor.execute("UPDATE usuario SET rol = ? WHERE id = ?", (nuevo_rol, id_usuario))
         self.db.commit()
-        
+        cursor.close()
+
     def insertar_usuario_manual(self, nombre, email, contrasena_hash, rol):
         cursor = self.db.cursor()
         sql = """
             INSERT INTO usuario (nombre, email, contraseña, rol)
-            VALUES (%s, %s, %s, %s)
+            VALUES (?, ?, ?, ?)
         """
         cursor.execute(sql, (nombre, email, contrasena_hash, rol))
         self.db.commit()
-        return cursor.lastrowid
-    
+        last_id = cursor.fetchone()
+        cursor.close()
+        return last_id
+
     def obtener_pedidos_por_usuario(self, id_usuario):
         try:
-            with self.db.cursor() as cursor:
-                cursor.execute("SELECT id FROM pedido WHERE usuario_id = %s", (id_usuario,))
-                return cursor.fetchall()
+            cursor = self.db.cursor()
+            cursor.execute("SELECT id FROM pedido WHERE usuario_id = ?", (id_usuario,))
+            resultados = cursor.fetchall()
+            cursor.close()
+            return resultados
         except Exception as e:
             print("Error al comprobar pedidos del usuario:", e)
             return []
