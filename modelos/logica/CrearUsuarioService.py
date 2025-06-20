@@ -1,12 +1,10 @@
 import re
 import hashlib
 from modelos.dao.usuarioDAO import UsuarioDAO
-from modelos.ConexionMYSQL import conectar
 
 class CrearUsuarioService:
-    def __init__(self):
-        self.conexion = conectar()
-        self.usuario_dao = UsuarioDAO(self.conexion)
+    def __init__(self, conexion):
+        self.usuario_dao = UsuarioDAO(conexion)
 
     def crear_usuario(self, nombre, email, contrasena, rol):
         # Validaciones básicas
@@ -28,7 +26,7 @@ class CrearUsuarioService:
         contrasena_hash = hashlib.sha256(contrasena.encode()).hexdigest()
 
         try:
-            usuario_id = self.usuario_dao.insertar_usuario_manual(nombre, email, contrasena_hash, rol)
+            self.usuario_dao.insertar_usuario_manual(nombre, email, contrasena_hash, rol)
             return None  # Éxito
         except Exception as e:
             return f"Error al crear usuario: {str(e)}"
