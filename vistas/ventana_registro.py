@@ -86,3 +86,8 @@ class VentanaRegistro(QDialog):
             self.ui.lblError.setText(mensaje_error)
         else:
             self.ui.lblError.setText("✅ Usuario registrado correctamente.")
+            # Limpiar campos tras registro exitoso
+            self.ui.txtNombre.clear()
+            self.ui.txtEmail.clear()
+            self.ui.txtContrasena.clear()
+            self.ui.txtContrasena2.clear()
