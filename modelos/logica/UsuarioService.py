@@ -5,13 +5,12 @@ import smtplib
 from email.message import EmailMessage
 from PyQt5.QtWidgets import QInputDialog
 
-from modelos.ConexionMYSQL import conectar
 from modelos.dao.usuarioDAO import UsuarioDAO
 from modelos.vo.usuarioVO import UsuarioVO
 
 class UsuarioService:
-    def __init__(self):
-        self.conexion = conectar()
+    def __init__(self, conexion):
+        self.conexion = conexion
         self.usuario_dao = UsuarioDAO(self.conexion)
 
     def verificar_credenciales(self, email, contrasena, rol_ingresado):

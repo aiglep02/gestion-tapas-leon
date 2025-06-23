@@ -47,6 +47,18 @@ class UsuarioDAO:
         self.db.commit()
         cursor.close()
 
+    def insertar_usuario_manual(self, nombre, email, contrasena_hash, rol):
+        cursor = self.db.cursor()
+        sql = """
+            INSERT INTO usuario (nombre, email, contraseña, rol)
+            VALUES (?, ?, ?, ?)
+        """
+        cursor.execute(sql, (nombre, email, contrasena_hash, rol))
+        self.db.commit()
+        last_id = cursor.lastrowid  
+        cursor.close()
+        return last_id
+
     def obtener_todos(self):
         cursor = self.db.cursor()
         cursor.execute("SELECT id, nombre, email, rol FROM usuario")
@@ -72,18 +84,6 @@ class UsuarioDAO:
         cursor.execute("UPDATE usuario SET rol = ? WHERE id = ?", (nuevo_rol, id_usuario))
         self.db.commit()
         cursor.close()
-
-    def insertar_usuario_manual(self, nombre, email, contrasena_hash, rol):
-        cursor = self.db.cursor()
-        sql = """
-            INSERT INTO usuario (nombre, email, contraseña, rol)
-            VALUES (?, ?, ?, ?)
-        """
-        cursor.execute(sql, (nombre, email, contrasena_hash, rol))
-        self.db.commit()
-        last_id = cursor.fetchone()
-        cursor.close()
-        return last_id
 
     def obtener_pedidos_por_usuario(self, id_usuario):
         try:

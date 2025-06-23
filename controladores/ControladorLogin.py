@@ -1,8 +1,8 @@
 from modelos.logica.UsuarioService import UsuarioService
 
 class ControladorLogin:
-    def __init__(self):
-        self.usuario_service = UsuarioService()
+    def __init__(self, conexion):
+        self.usuario_service = UsuarioService(conexion)
 
     def verificar_credenciales(self, email, contrasena, rol_ingresado):
         """
