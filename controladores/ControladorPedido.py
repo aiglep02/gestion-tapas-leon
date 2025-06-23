@@ -1,24 +1,22 @@
-from modelos.dao.pedidoDAO import PedidoDAO
-from modelos.vo.pedidoVO import PedidoVO
+# controladores/ControladorPedido.py
+
+from modelos.logica.PedidoService import PedidoService
 
 class ControladorPedido:
-    def __init__(self):
-        self.pedido_dao = PedidoDAO()
+    def __init__(self, conexion):
+        self.service = PedidoService(conexion)
 
     def crear_pedido(self, id_usuario, id_tapa, cantidad):
-        # Aquí iría lógica adicional, p.ej validar stock, pero dejamos simple por ahora
-        pedido = PedidoVO(id_usuario=id_usuario, id_tapa=id_tapa, cantidad=cantidad)
-        pedido_id = self.pedido_dao.insertar_pedido(pedido)
-        return pedido_id is not None
+        return self.service.crear_pedido(id_usuario, id_tapa, cantidad)
 
     def obtener_pedidos_usuario(self, id_usuario):
-        return self.pedido_dao.obtener_pedidos_por_usuario(id_usuario)
+        return self.service.obtener_pedidos_usuario(id_usuario)
 
     def cambiar_estado_pedido(self, id_pedido, nuevo_estado):
-        return self.pedido_dao.actualizar_estado_pedido(id_pedido, nuevo_estado)
+        return self.service.cambiar_estado_pedido(id_pedido, nuevo_estado)
 
     def eliminar_pedido(self, id_pedido):
-        return self.pedido_dao.eliminar_pedido(id_pedido)
+        return self.service.eliminar_pedido(id_pedido)
 
     def cambiar_tapa_pedido(self, id_pedido, nueva_tapa_id):
-        return self.pedido_dao.actualizar_tapa_pedido(id_pedido, nueva_tapa_id)
+        return self.service.cambiar_tapa_pedido(id_pedido, nueva_tapa_id)

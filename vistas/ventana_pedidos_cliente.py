@@ -17,9 +17,12 @@ class VentanaPedidosCliente(QWidget):
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
+        self.controlador_pedidos = ControladorPedido()
+        self.controlador_tapas = ControladorTapa()
+
         layout = QVBoxLayout()
 
-        # Botón de ayuda en esquina superior derecha
+        # Botón de ayuda
         ayuda_layout = QHBoxLayout()
         ayuda_layout.setAlignment(Qt.AlignRight)
         boton_ayuda = QPushButton("?")
@@ -38,12 +41,6 @@ class VentanaPedidosCliente(QWidget):
         layout.addWidget(self.tabla)
 
         self.setLayout(layout)
-
-        # Instanciar controladores
-        self.controlador_pedidos = ControladorPedido()
-        self.controlador_tapas = ControladorTapa()
-
-        # Cargar datos en la tabla
         self.cargar_pedidos()
 
     def mostrar_ayuda(self):
@@ -66,45 +63,37 @@ class VentanaPedidosCliente(QWidget):
         self.tabla.setColumnCount(5)
         self.tabla.setHorizontalHeaderLabels(["ID", "Tapa", "Cantidad", "Estado", "Acciones"])
 
-        self.tabla.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.tabla.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        self.tabla.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
-        self.tabla.setColumnWidth(4, 260)
+        for col in range(5):
+            self.tabla.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
 
         for i, pedido in enumerate(pedidos):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(pedido.id)))
-
             nombre_tapa = next((t.nombre for t in tapas if t.id_tapa == pedido.id_tapa), "Desconocida")
             self.tabla.setItem(i, 1, QTableWidgetItem(nombre_tapa))
-
             self.tabla.setItem(i, 2, QTableWidgetItem(str(pedido.cantidad)))
             self.tabla.setItem(i, 3, QTableWidgetItem(pedido.estado))
 
             if pedido.estado == "en preparación":
-                acciones = QWidget()
-                layout = QHBoxLayout()
-                layout.setContentsMargins(0, 0, 0, 0)
-                layout.setSpacing(4)
+                acciones_widget = QWidget()
+                acciones_layout = QHBoxLayout(acciones_widget)
+                acciones_layout.setContentsMargins(0, 0, 0, 0)
+                acciones_layout.setSpacing(4)
 
                 combo = QComboBox()
                 for tapa in tapas:
                     combo.addItem(tapa.nombre, tapa.id_tapa)
-                layout.addWidget(combo)
+                acciones_layout.addWidget(combo)
 
                 btn_cambiar = QPushButton("Cambiar")
-                btn_cambiar.setMinimumWidth(70)
                 btn_cambiar.clicked.connect(lambda _, pid=pedido.id, cb=combo: self.cambiar_tapa(pid, cb))
-                layout.addWidget(btn_cambiar)
+                acciones_layout.addWidget(btn_cambiar)
 
                 btn_eliminar = QPushButton("Eliminar")
-                btn_eliminar.setMinimumWidth(70)
                 btn_eliminar.clicked.connect(lambda _, pid=pedido.id: self.eliminar_pedido(pid))
-                layout.addWidget(btn_eliminar)
+                acciones_layout.addWidget(btn_eliminar)
 
-                acciones.setLayout(layout)
-                self.tabla.setCellWidget(i, 4, acciones)
+                acciones_layout.addStretch()
+                self.tabla.setCellWidget(i, 4, acciones_widget)
             else:
                 self.tabla.setItem(i, 4, QTableWidgetItem("-"))
 

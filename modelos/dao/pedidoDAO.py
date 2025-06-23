@@ -2,29 +2,22 @@ from modelos.vo.pedidoVO import PedidoVO
 
 class PedidoDAO:
     def __init__(self, conexion):
-        self.conn = conexion  
+        self.conn = conexion
 
     def insertar_pedido(self, pedidoVO):
         try:
-            if pedidoVO.id_tapa is None or pedidoVO.cantidad is None or pedidoVO.estado is None:
+            if not all([pedidoVO.id_tapa, pedidoVO.cantidad, pedidoVO.estado]):
                 raise ValueError("Datos incompletos para insertar el pedido.")
-            
+
             cursor = self.conn.cursor()
             cursor.execute("""
                 INSERT INTO pedido (usuario_id, id_tapa, cantidad, estado)
                 VALUES (?, ?, ?, ?)
-            """, (
-                pedidoVO.id_usuario,
-                pedidoVO.id_tapa,
-                pedidoVO.cantidad,
-                pedidoVO.estado
-            ))
+            """, (pedidoVO.id_usuario, pedidoVO.id_tapa, pedidoVO.cantidad, pedidoVO.estado))
             pedidoVO.id = cursor.lastrowid
             self.conn.commit()
             cursor.close()
-            print(f"Pedido insertado con ID: {pedidoVO.id}")
             return pedidoVO.id
-
         except Exception as e:
             print("Error al insertar pedido:", e)
             return None
@@ -40,16 +33,7 @@ class PedidoDAO:
             """, (usuario_id,))
             filas = cursor.fetchall()
             cursor.close()
-
-            return [
-                PedidoVO(
-                    id_usuario=usuario_id,
-                    id_tapa=f[1],
-                    cantidad=f[2],
-                    id=f[0],
-                    estado=f[3]
-                ) for f in filas
-            ]
+            return [PedidoVO(id_usuario=usuario_id, id_tapa=f[1], cantidad=f[2], id=f[0], estado=f[3]) for f in filas]
         except Exception as e:
             print("Error al obtener pedidos:", e)
             return []
@@ -65,16 +49,7 @@ class PedidoDAO:
             """)
             filas = cursor.fetchall()
             cursor.close()
-
-            return [
-                PedidoVO(
-                    id=f[0],
-                    id_usuario=f[1],
-                    id_tapa=f[2],
-                    cantidad=f[3],
-                    estado=f[4]
-                ) for f in filas
-            ]
+            return [PedidoVO(id=f[0], id_usuario=f[1], id_tapa=f[2], cantidad=f[3], estado=f[4]) for f in filas]
         except Exception as e:
             print("Error al obtener pedidos pendientes:", e)
             return []
@@ -82,11 +57,7 @@ class PedidoDAO:
     def actualizar_estado_pedido(self, pedido_id, estado):
         try:
             cursor = self.conn.cursor()
-            cursor.execute("""
-                UPDATE pedido
-                SET estado = ?
-                WHERE id = ?
-            """, (estado, pedido_id))
+            cursor.execute("UPDATE pedido SET estado = ? WHERE id = ?", (estado, pedido_id))
             self.conn.commit()
             cursor.close()
             return True
@@ -96,14 +67,9 @@ class PedidoDAO:
 
     def entregar_pedido(self, pedido_id, nombre_tapa, cantidad):
         try:
-            exito = self.actualizar_estado_pedido(pedido_id, "entregado")
-            if exito:
+            if self.actualizar_estado_pedido(pedido_id, "entregado"):
                 cursor = self.conn.cursor()
-                cursor.execute("""
-                    UPDATE tapa
-                    SET stock = stock - ?
-                    WHERE nombre = ?
-                """, (cantidad, nombre_tapa))
+                cursor.execute("UPDATE tapa SET stock = stock - ? WHERE nombre = ?", (cantidad, nombre_tapa))
                 self.conn.commit()
                 cursor.close()
                 return True
@@ -137,8 +103,9 @@ class PedidoDAO:
                 WHERE id = ? AND estado = 'en preparación'
             """, (nueva_tapa_id, pedido_id))
             self.conn.commit()
+            filas_afectadas = cursor.rowcount
             cursor.close()
-            return cursor.rowcount
+            return filas_afectadas
         except Exception as e:
             print("Error al cambiar tapa:", e)
             return 0
@@ -148,8 +115,9 @@ class PedidoDAO:
             cursor = self.conn.cursor()
             cursor.execute("DELETE FROM pedido WHERE id = ? AND estado = 'en preparación'", (pedido_id,))
             self.conn.commit()
+            filas_afectadas = cursor.rowcount
             cursor.close()
-            return cursor.rowcount
+            return filas_afectadas
         except Exception as e:
             print("Error al eliminar pedido:", e)
             return 0

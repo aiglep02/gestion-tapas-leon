@@ -7,5 +7,18 @@ class PedidoVO:
         self.estado = estado
 
     def __repr__(self):
-        return (f"<PedidoVO id={self.id}, usuario={self.id_usuario}, tapa={self.id_tapa}, "
-                f"cantidad={self.cantidad}, estado={self.estado}>")
+        return (
+            f"<PedidoVO id={self.id}, id_usuario={self.id_usuario}, id_tapa={self.id_tapa}, "
+            f"cantidad={self.cantidad}, estado='{self.estado}'>"
+        )
+
+    def __eq__(self, other):
+        if not isinstance(other, PedidoVO):
+            return False
+        return (
+            self.id == other.id and
+            self.id_usuario == other.id_usuario and
+            self.id_tapa == other.id_tapa and
+            self.cantidad == other.cantidad and
+            self.estado == other.estado
+        )
