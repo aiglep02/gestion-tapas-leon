@@ -1,8 +1,8 @@
 from modelos.logica.EstadisticaService import EstadisticaService
 
 class ControladorEstadisticas:
-    def __init__(self):
-        self.service = EstadisticaService()
+    def __init__(self, conexion):
+        self.service = EstadisticaService(conexion)
         self.estrategia = None
 
     def set_estrategia(self, estrategia):

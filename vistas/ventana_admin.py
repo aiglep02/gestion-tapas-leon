@@ -8,21 +8,20 @@ from estrategias.EstadisticaTopTapas import EstadisticaTopTapas
 from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
 from controladores.ControladorEstadisticas import ControladorEstadisticas
 from controladores.ControladorAdministrador import ControladorAdministrador
-from modelos.ConexionJDBC import conectar
 from vistas.admin_usuarios import AdminUsuarios
 
 class VentanaAdmin(QWidget):
-    def __init__(self, nombre_admin, coordinador):
+    def __init__(self, nombre_admin, coordinador, conexion):
         super().__init__()
         self.nombre_admin = nombre_admin
         self.setWindowTitle("Panel Administrador")
         self.setMinimumSize(600, 500)
         self.coordinador = coordinador
+        self.conexion = conexion  # ✅ Se pasa como parámetro
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        self.conexion = conectar()
         self.controlador = ControladorAdministrador(self.conexion)
 
         layout = QVBoxLayout()
@@ -95,7 +94,7 @@ class VentanaAdmin(QWidget):
         )
 
     def mostrar_estadisticas(self):
-        controlador = ControladorEstadisticas()
+        controlador = ControladorEstadisticas(self.conexion)  # ✅ conexión
         controlador.set_estrategia(EstadisticaTopTapas())
         resultados = controlador.calcular_estadisticas()
 
@@ -108,7 +107,7 @@ class VentanaAdmin(QWidget):
             self.tabla.setItem(i, 1, QTableWidgetItem(str(fila.total_pedida)))
 
     def mostrar_valoradas(self):
-        controlador = ControladorEstadisticas()
+        controlador = ControladorEstadisticas(self.conexion)  # ✅ conexión
         controlador.set_estrategia(EstadisticaTopValoradas())
         resultados = controlador.calcular_estadisticas()
 
@@ -173,5 +172,5 @@ class VentanaAdmin(QWidget):
             self.mostrar_tapas()
 
     def abrir_gestion_usuarios(self):
-        self.ventana_usuarios = AdminUsuarios()
+        self.ventana_usuarios = AdminUsuarios(self.conexion)  # ✅ conexión pasada
         self.ventana_usuarios.show()

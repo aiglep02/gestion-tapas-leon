@@ -105,3 +105,32 @@ class TapaDAO:
         except Exception as e:
             print("Error al obtener nombre de tapa:", e)
             return None
+
+    def obtener_datos_para_estadisticas(self):
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                SELECT 
+                    t.nombre, 
+                    IFNULL(SUM(p.cantidad), 0) AS total_pedida,
+                    IFNULL(AVG(v.puntuacion), 0) AS puntuacion_media
+                FROM tapa t
+                LEFT JOIN pedido p ON t.id = p.id_tapa
+                LEFT JOIN valoracion v ON t.id = v.id_tapa
+                GROUP BY t.id
+            """)
+            filas = cursor.fetchall()
+            cursor.close()
+
+            # Convertimos a objetos VO si vas a usarlos como tal en las estrategias
+            estadisticas = [
+                EstadisticaVO(
+                    nombre=fila[0],
+                    total_pedida=fila[1],
+                    puntuacion_media=fila[2]
+                ) for fila in filas
+            ]
+            return estadisticas
+        except Exception as e:
+            print("Error al obtener estadísticas:", e)
+            return []
