@@ -12,14 +12,14 @@ from controladores.controladorRegistro import ControladorRegistro
 
 
 class VentanaRegistro(QDialog):
-    def __init__(self, coordinador=None):
+    def __init__(self, conexion, coordinador=None):
         super().__init__()
         self.ui = Ui_contenedorCentral()
         self.ui.setupUi(self)
         self.coordinador = coordinador
-        self.controlador = ControladorRegistro()
-
-        # ✅ Centrar ventana
+        self.conexion = conexion  
+        self.controlador = ControladorRegistro(self.conexion)  
+        
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)

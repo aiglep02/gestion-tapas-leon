@@ -12,7 +12,6 @@ class ConexionJDBC:
 
     def _conectar(self):
         try:
-            # Ruta al conector JDBC .jar (debes poner aquí la ruta real)
             ruta_jar = os.path.abspath("lib/mysql-connector-j-9.3.0.jar")
             driver = "com.mysql.cj.jdbc.Driver"
             url = "jdbc:mysql://localhost:3306/gestion_tapas"
@@ -20,6 +19,10 @@ class ConexionJDBC:
             contrasena = "bdpass"
 
             self._conexion = jaydebeapi.connect(driver, url, [usuario, contrasena], ruta_jar)
+            
+            # 🔧 Desactivar autocommit para permitir rollback()
+            self._conexion.jconn.setAutoCommit(False)
+
             print("[INFO] Conexión JDBC establecida.")
         except Exception as e:
             print("[ERROR] Fallo al conectar vía JDBC:", e)

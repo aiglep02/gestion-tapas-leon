@@ -8,7 +8,7 @@ from controladores.ControladorPedido import ControladorPedido
 from controladores.ControladorTapa import ControladorTapa
 
 class VentanaPedidosCliente(QWidget):
-    def __init__(self, usuario_id):
+    def __init__(self, usuario_id, conexion):
         super().__init__()
         self.setWindowTitle("Pedidos del Cliente")
         self.setFixedSize(700, 400)
@@ -17,7 +17,7 @@ class VentanaPedidosCliente(QWidget):
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        self.controlador_pedidos = ControladorPedido()
+        self.controlador_pedidos = ControladorPedido(conexion)
         self.controlador_tapas = ControladorTapa()
 
         layout = QVBoxLayout()

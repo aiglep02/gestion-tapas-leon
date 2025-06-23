@@ -8,7 +8,7 @@ from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
 from controladores.ControladorEstadisticas import ControladorEstadisticas
 
 class VentanaEstadisticas(QDialog):
-    def __init__(self, tipo, modo="admin"):
+    def __init__(self, tipo, conexion, modo="admin"):
         super().__init__()
         self.setMinimumSize(400, 300)
         self.tipo = tipo
@@ -36,25 +36,24 @@ class VentanaEstadisticas(QDialog):
         layout.addWidget(self.tabla)
         self.setLayout(layout)
 
-        # Controlador y estrategia
-        self.controlador = ControladorEstadisticas()
+        # ✅ Controlador con conexión
+        self.controlador = ControladorEstadisticas(conexion)
 
+        # Mostrar estadísticas según tipo y modo
         if tipo == "mas_vendidas":
             self.setWindowTitle("Tapas más vendidas")
             self.controlador.set_estrategia(EstadisticaTopTapas())
             datos = self.controlador.calcular_estadisticas()
 
             if modo == "usuario":
-                columnas = ["Tapa"]
                 self.tabla.setColumnCount(1)
-                self.tabla.setHorizontalHeaderLabels(columnas)
+                self.tabla.setHorizontalHeaderLabels(["Tapa"])
                 self.tabla.setRowCount(len(datos))
                 for i, estadistica in enumerate(datos):
                     self.tabla.setItem(i, 0, QTableWidgetItem(estadistica.nombre))
             else:
-                columnas = ["Tapa", "Total Pedidos"]
                 self.tabla.setColumnCount(2)
-                self.tabla.setHorizontalHeaderLabels(columnas)
+                self.tabla.setHorizontalHeaderLabels(["Tapa", "Total Pedidos"])
                 self.tabla.setRowCount(len(datos))
                 for i, estadistica in enumerate(datos):
                     self.tabla.setItem(i, 0, QTableWidgetItem(estadistica.nombre))
@@ -64,9 +63,8 @@ class VentanaEstadisticas(QDialog):
             self.setWindowTitle("Tapas mejor valoradas")
             self.controlador.set_estrategia(EstadisticaTopValoradas())
             datos = self.controlador.calcular_estadisticas()
-            columnas = ["Tapa", "Puntuación Media"]
             self.tabla.setColumnCount(2)
-            self.tabla.setHorizontalHeaderLabels(columnas)
+            self.tabla.setHorizontalHeaderLabels(["Tapa", "Puntuación Media"])
             self.tabla.setRowCount(len(datos))
             for i, estadistica in enumerate(datos):
                 self.tabla.setItem(i, 0, QTableWidgetItem(estadistica.nombre))
@@ -80,8 +78,4 @@ class VentanaEstadisticas(QDialog):
         else:
             texto = "Pantalla de estadísticas de tapas."
 
-        QMessageBox.information(
-            self,
-            "Ayuda - Estadísticas",
-            texto
-        )
+        QMessageBox.information(self, "Ayuda - Estadísticas", texto)

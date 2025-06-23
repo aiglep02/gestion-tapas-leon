@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>btnActualizar</class>
- <widget class="QDialog" name="btnActualizar">
+ <class>AdminUsuarios</class>
+ <widget class="QDialog" name="AdminUsuarios">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -63,23 +63,23 @@
         </property>
         <item>
          <property name="text">
-          <string>cliente</string>
+          <string>Cliente</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>empleado</string>
+          <string>Empleado</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>administrador</string>
+          <string>Administrador</string>
          </property>
         </item>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnActualizar&#10;">
+       <widget class="QPushButton" name="btnActualizar">
         <property name="font">
          <font>
           <pointsize>9</pointsize>

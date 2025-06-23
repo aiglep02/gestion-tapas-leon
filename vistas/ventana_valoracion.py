@@ -7,13 +7,15 @@ from PyQt5.QtCore import Qt
 from controladores.ControladorValoracion import ControladorValoracion
 
 class VentanaValoracion(QWidget):
-    def __init__(self, usuario_id):
+    def __init__(self, usuario_id, conexion):  
         super().__init__()
         self.usuario_id = usuario_id
+        self.conexion = conexion                
         self.setWindowTitle("Valorar Tapas")
         self.setMinimumSize(500, 300)
 
-        self.controlador = ControladorValoracion()
+        self.controlador = ControladorValoracion(conexion)  
+
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())

@@ -4,13 +4,12 @@ from modelos.vo.valoracionVO import ValoracionVO
 from modelos.vo.tapaVO import TapaVO
 
 class ValoracionService:
-    def __init__(self):
-        self.valoracion_dao = ValoracionDAO()
-        self.pedido_dao = PedidoDAO()
+    def __init__(self, conexion):
+        self.valoracion_dao = ValoracionDAO(conexion)
+        self.pedido_dao = PedidoDAO(conexion)
 
     def obtener_tapas_entregadas(self, usuario_id):
         pedidos = self.pedido_dao.obtener_pedidos_entregados_por_usuario(usuario_id)
-        # Convertir a VO si necesario, aquí devolvemos lista de TapaVO con id y nombre
         tapas = [TapaVO(id_tapa=id_tapa, nombre=nombre) for id_tapa, nombre in pedidos]
         return tapas
 

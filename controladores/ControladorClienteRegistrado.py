@@ -2,6 +2,7 @@ from modelos.logica.ClienteService import ClienteService
 
 class ControladorClienteRegistrado:
     def __init__(self, conexion):
+        self.conexion = conexion
         self.service = ClienteService(conexion)
 
     def obtener_tapas_disponibles(self):

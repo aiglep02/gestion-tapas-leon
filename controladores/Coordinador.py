@@ -7,9 +7,9 @@ from vistas.ventana_invitado import VentanaInvitado
 
 class Coordinador:
     def __init__(self, conexion):
-        self.conexion = conexion  # ✅ guardar conexión
-        self.login_controller = ControladorLogin(conexion)  # ✅ pasar conexión
-        self.registro_ventana = VentanaRegistro(self)
+        self.conexion = conexion  
+        self.login_controller = ControladorLogin(conexion)  
+        self.registro_ventana = VentanaRegistro(self, self.conexion)
         self.intentos_fallidos = 0
 
     def login(self, email, contrasena, rol_ingresado, login_vista):

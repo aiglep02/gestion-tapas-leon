@@ -8,7 +8,7 @@ from estrategias.EstadisticaTopTapas import EstadisticaTopTapas
 from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
 from controladores.ControladorEstadisticas import ControladorEstadisticas
 from controladores.ControladorAdministrador import ControladorAdministrador
-from vistas.admin_usuarios import AdminUsuarios
+from vistas.ventana_gestion_usuarios import AdminUsuarios  # <- import corregido
 
 class VentanaAdmin(QWidget):
     def __init__(self, nombre_admin, coordinador, conexion):
@@ -17,13 +17,12 @@ class VentanaAdmin(QWidget):
         self.setWindowTitle("Panel Administrador")
         self.setMinimumSize(600, 500)
         self.coordinador = coordinador
-        self.conexion = conexion  # ✅ Se pasa como parámetro
+        self.conexion = conexion
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
         self.controlador = ControladorAdministrador(self.conexion)
-
         layout = QVBoxLayout()
 
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
@@ -75,7 +74,6 @@ class VentanaAdmin(QWidget):
 
         self.tabla = QTableWidget()
         layout.addWidget(self.tabla)
-
         self.setLayout(layout)
 
     def cerrar_sesion(self):
@@ -94,27 +92,23 @@ class VentanaAdmin(QWidget):
         )
 
     def mostrar_estadisticas(self):
-        controlador = ControladorEstadisticas(self.conexion)  # ✅ conexión
+        controlador = ControladorEstadisticas(self.conexion)
         controlador.set_estrategia(EstadisticaTopTapas())
         resultados = controlador.calcular_estadisticas()
-
         self.tabla.setRowCount(len(resultados))
         self.tabla.setColumnCount(2)
         self.tabla.setHorizontalHeaderLabels(["Tapa", "Total Pedidos"])
-
         for i, fila in enumerate(resultados):
             self.tabla.setItem(i, 0, QTableWidgetItem(fila.nombre))
             self.tabla.setItem(i, 1, QTableWidgetItem(str(fila.total_pedida)))
 
     def mostrar_valoradas(self):
-        controlador = ControladorEstadisticas(self.conexion)  # ✅ conexión
+        controlador = ControladorEstadisticas(self.conexion)
         controlador.set_estrategia(EstadisticaTopValoradas())
         resultados = controlador.calcular_estadisticas()
-
         self.tabla.setRowCount(len(resultados))
         self.tabla.setColumnCount(2)
         self.tabla.setHorizontalHeaderLabels(["Tapa", "Puntuación Media"])
-
         for i, fila in enumerate(resultados):
             self.tabla.setItem(i, 0, QTableWidgetItem(fila.nombre))
             self.tabla.setItem(i, 1, QTableWidgetItem(str(fila.puntuacion_media)))
@@ -124,7 +118,6 @@ class VentanaAdmin(QWidget):
         self.tabla.setRowCount(len(tapas))
         self.tabla.setColumnCount(4)
         self.tabla.setHorizontalHeaderLabels(["ID", "Nombre", "Descripción", "Stock"])
-
         for i, tapa in enumerate(tapas):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(tapa.id_tapa)))
             self.tabla.setItem(i, 1, QTableWidgetItem(tapa.nombre))
@@ -141,7 +134,7 @@ class VentanaAdmin(QWidget):
         stock, ok3 = QInputDialog.getInt(self, "Añadir tapa", "Stock inicial:", 0)
         if not ok3:
             return
-        self.controlador.insertar_tapa(nombre, descripcion, precio=0, stock=stock)
+        self.controlador.insertar_tapa(nombre, descripcion, stock=stock)
         self.mostrar_tapas()
 
     def editar_tapa(self):
@@ -149,11 +142,17 @@ class VentanaAdmin(QWidget):
         if fila < 0:
             QMessageBox.warning(self, "Editar", "Selecciona una tapa.")
             return
-        tapa_id = int(self.tabla.item(fila, 0).text())
-        nuevo_stock, ok = QInputDialog.getInt(self, "Editar tapa", "Nuevo stock:", 0)
-        if ok:
-            self.controlador.actualizar_tapa(tapa_id, stock=nuevo_stock)
-            self.mostrar_tapas()
+        if self.tabla.columnCount() != 4:
+            QMessageBox.warning(self, "Editar", "Primero pulsa 'Ver todas las tapas'.")
+            return
+        try:
+            tapa_id = int(self.tabla.item(fila, 0).text())
+            nuevo_stock, ok = QInputDialog.getInt(self, "Editar tapa", "Nuevo stock:", 0)
+            if ok:
+                self.controlador.actualizar_tapa(tapa_id, stock=nuevo_stock)
+                self.mostrar_tapas()
+        except ValueError:
+            QMessageBox.critical(self, "Error", "No se pudo obtener el ID de la tapa.")
 
     def eliminar_tapa(self):
         fila = self.tabla.currentRow()
@@ -172,5 +171,5 @@ class VentanaAdmin(QWidget):
             self.mostrar_tapas()
 
     def abrir_gestion_usuarios(self):
-        self.ventana_usuarios = AdminUsuarios(self.conexion)  # ✅ conexión pasada
+        self.ventana_usuarios = AdminUsuarios(self.conexion)
         self.ventana_usuarios.show()

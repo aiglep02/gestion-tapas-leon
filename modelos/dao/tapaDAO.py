@@ -8,7 +8,7 @@ class TapaDAO:
     def obtener_todas_las_tapas(self):
         try:
             cursor = self.conn.cursor()
-            cursor.execute("SELECT id, nombre, descripcion, precio, stock FROM tapa")
+            cursor.execute("SELECT id, nombre, descripcion, stock FROM tapa")  # Eliminado precio
             filas = cursor.fetchall()
 
             tapas = [
@@ -16,8 +16,7 @@ class TapaDAO:
                     id_tapa=fila[0],
                     nombre=fila[1],
                     descripcion=fila[2],
-                    precio=fila[3],
-                    stock=fila[4]
+                    stock=fila[3]
                 ) for fila in filas
             ]
             cursor.close()
@@ -30,17 +29,18 @@ class TapaDAO:
         try:
             cursor = self.conn.cursor()
             cursor.execute(
-                "INSERT INTO tapa (nombre, descripcion, precio, stock) VALUES (?, ?, ?, ?)",
-                (tapaVO.nombre, tapaVO.descripcion, tapaVO.precio, tapaVO.stock)
+                "INSERT INTO tapa (nombre, descripcion, stock) VALUES (?, ?, ?)",  # Eliminado precio
+                (tapaVO.nombre, tapaVO.descripcion, tapaVO.stock)
             )
-            self.conn.commit()
+            self.conn.commit()  # Realiza el commit manualmente
             cursor.close()
             return True
         except Exception as e:
+            self.conn.rollback()  # Si hay un error, hacer rollback
             print("Error al insertar tapa:", e)
             return False
 
-    def actualizar_tapa(self, tapa_id, nombre=None, descripcion=None, precio=None, stock=None):
+    def actualizar_tapa(self, tapa_id, nombre=None, descripcion=None, stock=None):
         try:
             campos = []
             valores = []
@@ -51,9 +51,6 @@ class TapaDAO:
             if descripcion:
                 campos.append("descripcion = ?")
                 valores.append(descripcion)
-            if precio is not None:
-                campos.append("precio = ?")
-                valores.append(precio)
             if stock is not None:
                 campos.append("stock = ?")
                 valores.append(stock)
@@ -66,10 +63,12 @@ class TapaDAO:
 
             cursor = self.conn.cursor()
             cursor.execute(sql, valores)
-            self.conn.commit()
+            self.conn.commit()  # Realiza el commit manualmente
             cursor.close()
+
             return cursor.rowcount
         except Exception as e:
+            self.conn.rollback()  # Si hay un error, hacer rollback
             print("Error al actualizar tapa:", e)
             return 0
 
@@ -77,10 +76,11 @@ class TapaDAO:
         try:
             cursor = self.conn.cursor()
             cursor.execute("DELETE FROM tapa WHERE id = ?", (tapa_id,))
-            self.conn.commit()
+            self.conn.commit()  # Realiza el commit manualmente
             cursor.close()
             return cursor.rowcount
         except Exception as e:
+            self.conn.rollback()  # Si hay un error, hacer rollback
             print("Error al eliminar tapa:", e)
             return 0
 
@@ -88,10 +88,11 @@ class TapaDAO:
         try:
             cursor = self.conn.cursor()
             cursor.execute("UPDATE tapa SET stock = stock - ? WHERE id = ?", (cantidad, id_tapa))
-            self.conn.commit()
+            self.conn.commit()  # Realiza el commit manualmente
             cursor.close()
             return True
         except Exception as e:
+            self.conn.rollback()  # Si hay un error, hacer rollback
             print("Error al reducir stock:", e)
             return False
 
@@ -122,7 +123,6 @@ class TapaDAO:
             filas = cursor.fetchall()
             cursor.close()
 
-            # Convertimos a objetos VO si vas a usarlos como tal en las estrategias
             estadisticas = [
                 EstadisticaVO(
                     nombre=fila[0],
@@ -134,14 +134,15 @@ class TapaDAO:
         except Exception as e:
             print("Error al obtener estadísticas:", e)
             return []
-        
+
     def reducir_stock_por_nombre(self, nombre_tapa, cantidad):
         try:
             cursor = self.conn.cursor()
             cursor.execute("UPDATE tapa SET stock = stock - ? WHERE nombre = ?", (cantidad, nombre_tapa))
-            self.conn.commit()
+            self.conn.commit()  # Realiza el commit manualmente
             cursor.close()
             return True
         except Exception as e:
+            self.conn.rollback()  # Si hay un error, hacer rollback
             print("Error al reducir stock por nombre:", e)
             return False

@@ -14,7 +14,11 @@ class PedidoDAO:
                 INSERT INTO pedido (usuario_id, id_tapa, cantidad, estado)
                 VALUES (?, ?, ?, ?)
             """, (pedidoVO.id_usuario, pedidoVO.id_tapa, pedidoVO.cantidad, pedidoVO.estado))
-            pedidoVO.id = cursor.lastrowid
+
+            # 🔁 Reemplazo de lastrowid por SELECT LAST_INSERT_ID()
+            cursor.execute("SELECT LAST_INSERT_ID()")
+            pedidoVO.id = cursor.fetchone()[0]
+
             self.conn.commit()
             cursor.close()
             return pedidoVO.id
