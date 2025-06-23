@@ -1,8 +1,9 @@
 from modelos.logica.ValoracionInvitadoService import ValoracionInvitadoService
+from modelos.ConexionJDBC import conectar
 
 class ControladorValoracionInvitado:
     def __init__(self):
-        self.service = ValoracionInvitadoService()
+        self.service = ValoracionInvitadoService(conectar())
 
     def enviar_valoracion(self, id_tapa, puntuacion, comentario):
         """
