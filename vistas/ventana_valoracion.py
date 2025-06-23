@@ -31,8 +31,10 @@ class VentanaValoracion(QWidget):
         ayuda_layout.addWidget(boton_ayuda)
         layout.addLayout(ayuda_layout)
 
+        # Título centrado
         titulo = QLabel("Valora tus tapas entregadas")
         titulo.setFont(QFont("Arial", 16))
+        titulo.setAlignment(Qt.AlignCenter)
         layout.addWidget(titulo)
 
         self.comboTapas = QComboBox()
@@ -83,6 +85,8 @@ class VentanaValoracion(QWidget):
 
         if exito:
             QMessageBox.information(self, "Gracias", "Valoración enviada correctamente.")
-            self.close()
+            self.close()  # ✅ O si prefieres mantener abierta:
+            # self.spinPuntuacion.setValue(1)
+            # self.textoComentario.clear()
         else:
             QMessageBox.critical(self, "Error", "No se pudo enviar la valoración.")
