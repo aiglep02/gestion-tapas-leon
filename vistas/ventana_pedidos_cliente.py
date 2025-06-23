@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem,
-    QComboBox, QPushButton, QHBoxLayout, QMessageBox, QHeaderView
+    QComboBox, QPushButton, QHBoxLayout, QMessageBox, QHeaderView, QSizePolicy
 )
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
@@ -11,7 +11,7 @@ class VentanaPedidosCliente(QWidget):
     def __init__(self, usuario_id, conexion):
         super().__init__()
         self.setWindowTitle("Pedidos del Cliente")
-        self.setFixedSize(700, 400)
+        self.setFixedSize(750, 400)
         self.usuario_id = usuario_id
 
         with open("estilos/estilo.qss", "r") as f:
@@ -63,8 +63,12 @@ class VentanaPedidosCliente(QWidget):
         self.tabla.setColumnCount(5)
         self.tabla.setHorizontalHeaderLabels(["ID", "Tapa", "Cantidad", "Estado", "Acciones"])
 
-        for col in range(5):
-            self.tabla.horizontalHeader().setSectionResizeMode(col, QHeaderView.Stretch)
+        # Asignar ancho personalizado a cada columna
+        self.tabla.setColumnWidth(0, 50)   # ID
+        self.tabla.setColumnWidth(1, 200)  # Tapa
+        self.tabla.setColumnWidth(2, 70)   # Cantidad
+        self.tabla.setColumnWidth(3, 130)  # Estado
+        self.tabla.setColumnWidth(4, 280)  # Acciones
 
         for i, pedido in enumerate(pedidos):
             self.tabla.setItem(i, 0, QTableWidgetItem(str(pedido.id)))
@@ -77,18 +81,24 @@ class VentanaPedidosCliente(QWidget):
                 acciones_widget = QWidget()
                 acciones_layout = QHBoxLayout(acciones_widget)
                 acciones_layout.setContentsMargins(0, 0, 0, 0)
-                acciones_layout.setSpacing(4)
+                acciones_layout.setSpacing(6)
 
                 combo = QComboBox()
+                combo.setMinimumWidth(120)
+                combo.setFixedHeight(26)
                 for tapa in tapas:
                     combo.addItem(tapa.nombre, tapa.id_tapa)
                 acciones_layout.addWidget(combo)
 
                 btn_cambiar = QPushButton("Cambiar")
+                btn_cambiar.setMinimumWidth(80)
+                btn_cambiar.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 btn_cambiar.clicked.connect(lambda _, pid=pedido.id, cb=combo: self.cambiar_tapa(pid, cb))
                 acciones_layout.addWidget(btn_cambiar)
 
                 btn_eliminar = QPushButton("Eliminar")
+                btn_eliminar.setMinimumWidth(80)
+                btn_eliminar.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
                 btn_eliminar.clicked.connect(lambda _, pid=pedido.id: self.eliminar_pedido(pid))
                 acciones_layout.addWidget(btn_eliminar)
 

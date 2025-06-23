@@ -5,9 +5,9 @@ from modelos.dao.pedidoDAO import PedidoDAO
 from modelos.vo.pedidoVO import PedidoVO
 
 class InvitadoService:
-    def __init__(self):
-        self.tapa_dao = TapaDAO()
-        self.pedido_dao = PedidoDAO()
+    def __init__(self, conexion):
+        self.tapa_dao = TapaDAO(conexion)
+        self.pedido_dao = PedidoDAO(conexion)
 
     def obtener_tapas_disponibles(self):
         """
@@ -18,7 +18,7 @@ class InvitadoService:
     def hacer_pedido_invitado(self, id_tapa, cantidad):
         """
         Realiza un pedido sin usuario registrado (invitado).
-        Se asigna un id_usuario fijo para invitado, p.ej. 0 o -1.
+        Se asigna un id_usuario fijo para invitado.
         Devuelve (exito: bool, mensaje: str)
         """
         tapas = self.tapa_dao.obtener_todas_las_tapas()
@@ -30,7 +30,7 @@ class InvitadoService:
         if tapa.stock == 0:
             return False, "Esta tapa no está disponible."
 
-        # Usamos id_usuario fijo para invitado, por ejemplo 0
+        # Usamos id_usuario fijo para invitado, por ejemplo 38
         pedido = PedidoVO(id_usuario=38, id_tapa=id_tapa, cantidad=cantidad, estado="En preparación")
         id_pedido = self.pedido_dao.insertar_pedido(pedido)
 

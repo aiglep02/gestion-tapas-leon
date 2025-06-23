@@ -61,7 +61,7 @@ class Coordinador:
         self.cliente.show()
 
     def mostrar_vista_invitado(self):
-        self.invitado = VentanaInvitado(self)
+        self.invitado = VentanaInvitado(self, self.conexion)  
         self.invitado.show()
 
     def mostrar_registro(self):

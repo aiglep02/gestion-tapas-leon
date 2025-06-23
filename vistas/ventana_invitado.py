@@ -4,24 +4,23 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from modelos.logica.invitadoService import InvitadoService  # Servicio para lógica
+from modelos.logica.invitadoService import InvitadoService
 from vistas.ventana_estadisticas import VentanaEstadisticas
 from vistas.ventana_valoracion_invitado import VentanaValoracionInvitado
 
 class VentanaInvitado(QWidget):
-    def __init__(self, coordinador):
+    def __init__(self, coordinador, conexion):
         super().__init__()
         self.setWindowTitle("Explorar como Invitado")
         self.setFixedSize(400, 430)
         self.coordinador = coordinador
-        self.service = InvitadoService()  # Servicio para operaciones
+        self.service = InvitadoService(conexion)  # ✅ conexión pasada
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
         layout = QVBoxLayout()
 
-        # Botón ayuda
         ayuda_layout = QHBoxLayout()
         ayuda_layout.setAlignment(Qt.AlignRight)
         boton_ayuda = QPushButton("?")
@@ -31,28 +30,23 @@ class VentanaInvitado(QWidget):
         ayuda_layout.addWidget(boton_ayuda)
         layout.addLayout(ayuda_layout)
 
-        # Mensaje bienvenida
         mensaje = QLabel("Bienvenido, invitado")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)
 
-        # ComboBox tapas
         self.comboTapas = QComboBox()
         layout.addWidget(self.comboTapas)
 
-        # SpinBox cantidad
         self.spinCantidad = QSpinBox()
         self.spinCantidad.setMinimum(1)
         self.spinCantidad.setMaximum(10)
         layout.addWidget(self.spinCantidad)
 
-        # Botón hacer pedido
         self.btnHacerPedido = QPushButton("Hacer pedido")
         self.btnHacerPedido.clicked.connect(self.hacer_pedido)
         layout.addWidget(self.btnHacerPedido)
 
-        # Botones estadísticas
         self.btnMasVendidas = QPushButton("Ver tapas más vendidas")
         self.btnMasVendidas.clicked.connect(self.mostrar_mas_vendidas)
         layout.addWidget(self.btnMasVendidas)
@@ -61,12 +55,10 @@ class VentanaInvitado(QWidget):
         self.btnMejorValoradas.clicked.connect(self.mostrar_mejor_valoradas)
         layout.addWidget(self.btnMejorValoradas)
 
-        # Botón valorar
         self.btnValorar = QPushButton("Valorar una tapa")
         self.btnValorar.clicked.connect(self.abrir_valoracion)
         layout.addWidget(self.btnValorar)
 
-        # Botón cerrar sesión
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
         self.btnCerrarSesion.setStyleSheet("background-color: red; color: white;")
         self.btnCerrarSesion.clicked.connect(self.cerrar_sesion)
@@ -76,7 +68,6 @@ class VentanaInvitado(QWidget):
 
         self.cargar_tapas()
 
-        # Asegurar que tapas_pedidas es un atributo estático de la clase VentanaValoracionInvitado
         if not hasattr(VentanaValoracionInvitado, "tapas_pedidas"):
             VentanaValoracionInvitado.tapas_pedidas = []
 
@@ -85,11 +76,11 @@ class VentanaInvitado(QWidget):
             self,
             "Ayuda - Invitado",
             "Como invitado puedes:\n"
-            "- Ver la lista de tapas disponibles\n"
-            "- Realizar un pedido sin estar registrado\n"
-            "- Ver estadísticas sobre tapas populares y valoradas\n"
-            "- Valorar tapas que hayas pedido\n\n"
-            "Para guardar historial y preferencias, regístrate como cliente."
+            "- Ver tapas disponibles\n"
+            "- Realizar un pedido sin registrarte\n"
+            "- Consultar tapas más pedidas y mejor valoradas\n"
+            "- Valorar tapas que has pedido\n\n"
+            "Para guardar historial, regístrate como cliente."
         )
 
     def cargar_tapas(self):
@@ -118,15 +109,14 @@ class VentanaInvitado(QWidget):
             QMessageBox.critical(self, "Error", mensaje)
 
     def mostrar_mas_vendidas(self):
-        self.estadistica = VentanaEstadisticas("mas_vendidas", modo="usuario")
+        self.estadistica = VentanaEstadisticas("mas_vendidas", self.service.tapa_dao.conn, modo="usuario")  # ✅ conexión
         self.estadistica.exec_()
 
     def mostrar_mejor_valoradas(self):
-        self.estadistica = VentanaEstadisticas("mejor_valoradas")
+        self.estadistica = VentanaEstadisticas("mejor_valoradas", self.service.tapa_dao.conn)  # ✅ conexión
         self.estadistica.exec_()
 
     def abrir_valoracion(self):
-        # Pasamos la lista estática como argumento
         self.ventana_valoracion = VentanaValoracionInvitado(VentanaValoracionInvitado.tapas_pedidas)
         self.ventana_valoracion.show()
 
