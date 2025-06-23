@@ -134,3 +134,14 @@ class TapaDAO:
         except Exception as e:
             print("Error al obtener estadísticas:", e)
             return []
+        
+    def reducir_stock_por_nombre(self, nombre_tapa, cantidad):
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("UPDATE tapa SET stock = stock - ? WHERE nombre = ?", (cantidad, nombre_tapa))
+            self.conn.commit()
+            cursor.close()
+            return True
+        except Exception as e:
+            print("Error al reducir stock por nombre:", e)
+            return False

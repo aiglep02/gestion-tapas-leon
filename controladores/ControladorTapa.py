@@ -1,11 +1,15 @@
-from modelos.dao.tapaDAO import TapaDAO
+from modelos.logica.TapaService import TapaService
+from modelos.ConexionJDBC import conectar
 
 class ControladorTapa:
     def __init__(self):
-        self.tapa_dao = TapaDAO()
+        self.service = TapaService(conectar())
 
     def obtener_tapas(self):
-        return self.tapa_dao.obtener_todas_las_tapas()
+        return self.service.obtener_todas_las_tapas()
 
-    def reducir_stock(self, nombre_tapa, cantidad):
-        self.tapa_dao.reducir_stock_por_nombre(nombre_tapa, cantidad)
+    def reducir_stock(self, id_tapa, cantidad):
+        return self.service.reducir_stock_por_id(id_tapa, cantidad)
+
+    def reducir_stock_por_nombre(self, nombre_tapa, cantidad):
+        return self.service.reducir_stock_por_nombre(nombre_tapa, cantidad)
