@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from controladores.ControladorCrearUsuario import ControladorCrearUsuario
 
 class VentanaCrearUsuario(QDialog):
-    def __init__(self, conexion):
+    def __init__(self, coordinador):  # Recibe coordinador, no conexión directa
         super().__init__()
         self.setWindowTitle("Crear nuevo usuario")
         self.setFixedSize(300, 250)
@@ -14,8 +14,8 @@ class VentanaCrearUsuario(QDialog):
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        # ✅ Recibe y usa la conexión correctamente
-        self.controlador = ControladorCrearUsuario(conexion)
+        self.coordinador = coordinador
+        self.controlador = ControladorCrearUsuario()  # Sin conexión
 
         layout = QVBoxLayout()
 
@@ -74,7 +74,6 @@ class VentanaCrearUsuario(QDialog):
         if not nombre or not email or not contrasena:
             QMessageBox.warning(self, "Error", "Todos los campos son obligatorios.")
             return
-
         resultado = self.controlador.crear_usuario(nombre, email, contrasena, rol)
 
         if resultado is None:

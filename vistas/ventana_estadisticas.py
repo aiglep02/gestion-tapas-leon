@@ -8,7 +8,7 @@ from estrategias.EstadisticaTopValoradas import EstadisticaTopValoradas
 from controladores.ControladorEstadisticas import ControladorEstadisticas
 
 class VentanaEstadisticas(QDialog):
-    def __init__(self, tipo, conexion, modo="admin"):
+    def __init__(self, tipo, modo="admin"):
         super().__init__()
         self.setMinimumSize(400, 300)
         self.tipo = tipo
@@ -35,9 +35,7 @@ class VentanaEstadisticas(QDialog):
         self.tabla = QTableWidget()
         layout.addWidget(self.tabla)
         self.setLayout(layout)
-
-        # ✅ Controlador con conexión
-        self.controlador = ControladorEstadisticas(conexion)
+        self.controlador = ControladorEstadisticas()
 
         # Mostrar estadísticas según tipo y modo
         if tipo == "mas_vendidas":

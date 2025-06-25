@@ -7,15 +7,14 @@ from vistas.ventana_valoracion import VentanaValoracion
 from vistas.ventana_estadisticas import VentanaEstadisticas
 
 class VentanaClienteRegistrado(QWidget):
-    def __init__(self, usuario_id, nombre, coordinador, conexion):
+    def __init__(self, usuario_id, nombre, coordinador):
         super().__init__()
         self.setWindowTitle("Panel Cliente Registrado")
         self.setFixedSize(400, 420)
         self.usuario_id = usuario_id
         self.nombre = nombre
         self.coordinador = coordinador
-        self.conexion = conexion  
-        self.controlador = ControladorClienteRegistrado(conexion)
+        self.controlador = ControladorClienteRegistrado()  # Sin pasar conexión
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
@@ -121,17 +120,17 @@ class VentanaClienteRegistrado(QWidget):
             QMessageBox.warning(self, "Error", mensaje)
 
     def abrir_historial(self):
-        self.ventana_historial = VentanaPedidosCliente(self.usuario_id, self.conexion)  
+        self.ventana_historial = VentanaPedidosCliente(self.usuario_id, self.coordinador)
         self.ventana_historial.show()
 
     def abrir_valoracion(self):
-        self.ventana_valoracion = VentanaValoracion(self.usuario_id, self.conexion)  
+        self.ventana_valoracion = VentanaValoracion(self.usuario_id, self.coordinador)
         self.ventana_valoracion.show()
 
     def mostrar_mas_vendidas(self):
-        self.estadistica = VentanaEstadisticas("mas_vendidas", self.conexion, modo="usuario")  
+        self.estadistica = VentanaEstadisticas("mas_vendidas", modo="usuario")
         self.estadistica.exec_()
 
     def mostrar_mejor_valoradas(self):
-        self.estadistica = VentanaEstadisticas("mejor_valoradas", self.conexion)  
+        self.estadistica = VentanaEstadisticas("mejor_valoradas")
         self.estadistica.exec_()

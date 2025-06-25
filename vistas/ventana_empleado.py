@@ -4,13 +4,13 @@ from PyQt5.QtGui import QFont
 from controladores.ControladorEmpleado import ControladorEmpleado
 
 class VentanaEmpleado(QWidget):
-    def __init__(self, nombre_empleado, coordinador, conexion):
+    def __init__(self, nombre_empleado, coordinador):
         super().__init__()
         self.setWindowTitle("Panel de Empleado")
         self.setMinimumSize(900, 400)
         self.nombre_empleado = nombre_empleado
         self.coordinador = coordinador
-        self.controlador = ControladorEmpleado(conexion)
+        self.controlador = ControladorEmpleado()
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())

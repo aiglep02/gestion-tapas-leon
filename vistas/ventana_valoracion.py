@@ -7,15 +7,16 @@ from PyQt5.QtCore import Qt
 from controladores.ControladorValoracion import ControladorValoracion
 
 class VentanaValoracion(QWidget):
-    def __init__(self, usuario_id, conexion):  
+    def __init__(self, usuario_id, coordinador):
         super().__init__()
         self.usuario_id = usuario_id
-        self.conexion = conexion                
+        self.coordinador = coordinador
+
         self.setWindowTitle("Valorar Tapas")
         self.setMinimumSize(500, 300)
 
-        self.controlador = ControladorValoracion(conexion)  
-
+        # Instanciamos el controlador SIN pasar conexión
+        self.controlador = ControladorValoracion()
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
@@ -39,23 +40,23 @@ class VentanaValoracion(QWidget):
         titulo.setAlignment(Qt.AlignCenter)
         layout.addWidget(titulo)
 
-        self.comboTapas = QComboBox()
         layout.addWidget(QLabel("Tapa entregada:"))
+        self.comboTapas = QComboBox()
         layout.addWidget(self.comboTapas)
 
+        layout.addWidget(QLabel("Puntuación (1 a 5):"))
         self.spinPuntuacion = QSpinBox()
         self.spinPuntuacion.setMinimum(1)
         self.spinPuntuacion.setMaximum(5)
-        layout.addWidget(QLabel("Puntuación (1 a 5):"))
         layout.addWidget(self.spinPuntuacion)
 
-        self.textoComentario = QTextEdit()
         layout.addWidget(QLabel("Comentario:"))
+        self.textoComentario = QTextEdit()
         layout.addWidget(self.textoComentario)
 
         self.btnEnviar = QPushButton("Enviar valoración")
-        layout.addWidget(self.btnEnviar)
         self.btnEnviar.clicked.connect(self.enviar_valoracion)
+        layout.addWidget(self.btnEnviar)
 
         self.cargar_tapas_entregadas()
 
@@ -69,6 +70,7 @@ class VentanaValoracion(QWidget):
         )
 
     def cargar_tapas_entregadas(self):
+        # Ahora sólo pasamos usuario_id
         tapas = self.controlador.obtener_tapas_entregadas(self.usuario_id)
         self.comboTapas.clear()
         for tapa in tapas:
@@ -79,7 +81,7 @@ class VentanaValoracion(QWidget):
         puntuacion = self.spinPuntuacion.value()
         comentario = self.textoComentario.toPlainText()
 
-        if not id_tapa:
+        if id_tapa is None:
             QMessageBox.warning(self, "Error", "Debes seleccionar una tapa.")
             return
 
@@ -87,8 +89,6 @@ class VentanaValoracion(QWidget):
 
         if exito:
             QMessageBox.information(self, "Gracias", "Valoración enviada correctamente.")
-            self.close()  # ✅ O si prefieres mantener abierta:
-            # self.spinPuntuacion.setValue(1)
-            # self.textoComentario.clear()
+            self.close()
         else:
             QMessageBox.critical(self, "Error", "No se pudo enviar la valoración.")

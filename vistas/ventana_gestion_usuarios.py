@@ -4,18 +4,19 @@ from controladores.ControladorAdminUsuarios import ControladorAdminUsuarios
 from vistas.ventana_crear_usuario import VentanaCrearUsuario
 
 class AdminUsuarios(QDialog):
-    def __init__(self, conexion):
+    def __init__(self, coordinador):
         super().__init__()
         self.ui = Ui_AdminUsuarios()
         self.ui.setupUi(self)
         self.setWindowTitle("Gestión de Usuarios")
-        self.conexion = conexion
+        self.coordinador = coordinador
 
         # Aplicar estilos
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        self.controlador = ControladorAdminUsuarios(conexion)
+        # Controlador sin conexión
+        self.controlador = ControladorAdminUsuarios()
 
         # Configurar ComboBox con valores visuales y reales
         self.ui.Rol.clear()
@@ -71,7 +72,7 @@ class AdminUsuarios(QDialog):
                     QMessageBox.warning(self, "No se puede eliminar", str(e))
 
     def abrir_crear_usuario(self):
-        self.ventana_crear_usuario = VentanaCrearUsuario(self.conexion)
+        self.ventana_crear_usuario = VentanaCrearUsuario(self.coordinador)  # Sin conexión
         resultado = self.ventana_crear_usuario.exec_()
         if resultado == 1:
             self.cargar_usuarios()

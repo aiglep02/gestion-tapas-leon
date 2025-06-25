@@ -56,7 +56,10 @@ class UsuarioDAO:
         """
         cursor.execute(sql, (nombre, email, contrasena_hash, rol))
         self.db.commit()
-        last_id = cursor.lastrowid  
+
+        cursor.execute("SELECT LAST_INSERT_ID()")
+        last_id = cursor.fetchone()[0]
+
         cursor.close()
         return last_id
 

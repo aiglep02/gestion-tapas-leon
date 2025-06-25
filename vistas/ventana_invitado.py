@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QComboBox, QPushButton, QSpinBox,
-    QMessageBox, QHBoxLayout
+    QTextEdit, QMessageBox, QHBoxLayout
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -9,18 +9,21 @@ from vistas.ventana_estadisticas import VentanaEstadisticas
 from vistas.ventana_valoracion_invitado import VentanaValoracionInvitado
 
 class VentanaInvitado(QWidget):
-    def __init__(self, coordinador, conexion):
+    def __init__(self, coordinador):
         super().__init__()
         self.setWindowTitle("Explorar como Invitado")
         self.setFixedSize(400, 430)
         self.coordinador = coordinador
-        self.service = InvitadoService(conexion)  # ✅ conexión pasada
+
+        # El service gestiona internamente la conexión
+        self.service = InvitadoService()
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
         layout = QVBoxLayout()
 
+        # Ayuda
         ayuda_layout = QHBoxLayout()
         ayuda_layout.setAlignment(Qt.AlignRight)
         boton_ayuda = QPushButton("?")
@@ -30,19 +33,23 @@ class VentanaInvitado(QWidget):
         ayuda_layout.addWidget(boton_ayuda)
         layout.addLayout(ayuda_layout)
 
+        # Bienvenida
         mensaje = QLabel("Bienvenido, invitado")
         mensaje.setAlignment(Qt.AlignCenter)
         mensaje.setFont(QFont("Arial", 16))
         layout.addWidget(mensaje)
 
+        # Selector de tapas
         self.comboTapas = QComboBox()
         layout.addWidget(self.comboTapas)
 
+        # Cantidad
         self.spinCantidad = QSpinBox()
         self.spinCantidad.setMinimum(1)
         self.spinCantidad.setMaximum(10)
         layout.addWidget(self.spinCantidad)
 
+        # Botones de acción
         self.btnHacerPedido = QPushButton("Hacer pedido")
         self.btnHacerPedido.clicked.connect(self.hacer_pedido)
         layout.addWidget(self.btnHacerPedido)
@@ -87,7 +94,6 @@ class VentanaInvitado(QWidget):
         tapas = self.service.obtener_tapas_disponibles()
         self.comboTapas.clear()
         self.comboTapas.addItem("Selecciona una tapa", None)
-
         for tapa in tapas:
             texto = f"{tapa.nombre} (No disponible)" if tapa.stock == 0 else f"{tapa.nombre} (Stock: {tapa.stock})"
             self.comboTapas.addItem(texto, tapa.id_tapa if tapa.stock > 0 else None)
@@ -95,7 +101,6 @@ class VentanaInvitado(QWidget):
     def hacer_pedido(self):
         id_tapa = self.comboTapas.currentData()
         cantidad = self.spinCantidad.value()
-
         if not id_tapa:
             QMessageBox.warning(self, "Error", "Debes seleccionar una tapa.")
             return
@@ -109,11 +114,13 @@ class VentanaInvitado(QWidget):
             QMessageBox.critical(self, "Error", mensaje)
 
     def mostrar_mas_vendidas(self):
-        self.estadistica = VentanaEstadisticas("mas_vendidas", self.service.tapa_dao.conn, modo="usuario")  # ✅ conexión
+        # Llamada corregida: sólo tipo y modo
+        self.estadistica = VentanaEstadisticas("mas_vendidas", modo="usuario")
         self.estadistica.exec_()
 
     def mostrar_mejor_valoradas(self):
-        self.estadistica = VentanaEstadisticas("mejor_valoradas", self.service.tapa_dao.conn)  # ✅ conexión
+        # Llamada corregida: sólo tipo
+        self.estadistica = VentanaEstadisticas("mejor_valoradas")
         self.estadistica.exec_()
 
     def abrir_valoracion(self):

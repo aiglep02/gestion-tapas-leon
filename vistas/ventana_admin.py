@@ -11,18 +11,19 @@ from controladores.ControladorAdministrador import ControladorAdministrador
 from vistas.ventana_gestion_usuarios import AdminUsuarios  # <- import corregido
 
 class VentanaAdmin(QWidget):
-    def __init__(self, nombre_admin, coordinador, conexion):
+    def __init__(self, nombre_admin, coordinador):
         super().__init__()
         self.nombre_admin = nombre_admin
+        self.coordinador = coordinador
         self.setWindowTitle("Panel Administrador")
         self.setMinimumSize(600, 500)
-        self.coordinador = coordinador
-        self.conexion = conexion
 
         with open("estilos/estilo.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        self.controlador = ControladorAdministrador(self.conexion)
+        # Instancia el controlador SIN pasar conexión
+        self.controlador = ControladorAdministrador()
+
         layout = QVBoxLayout()
 
         self.btnCerrarSesion = QPushButton("Cerrar sesión")
@@ -92,7 +93,7 @@ class VentanaAdmin(QWidget):
         )
 
     def mostrar_estadisticas(self):
-        controlador = ControladorEstadisticas(self.conexion)
+        controlador = ControladorEstadisticas()  # Sin conexión
         controlador.set_estrategia(EstadisticaTopTapas())
         resultados = controlador.calcular_estadisticas()
         self.tabla.setRowCount(len(resultados))
@@ -103,7 +104,7 @@ class VentanaAdmin(QWidget):
             self.tabla.setItem(i, 1, QTableWidgetItem(str(fila.total_pedida)))
 
     def mostrar_valoradas(self):
-        controlador = ControladorEstadisticas(self.conexion)
+        controlador = ControladorEstadisticas()  # Sin conexión
         controlador.set_estrategia(EstadisticaTopValoradas())
         resultados = controlador.calcular_estadisticas()
         self.tabla.setRowCount(len(resultados))
@@ -171,5 +172,5 @@ class VentanaAdmin(QWidget):
             self.mostrar_tapas()
 
     def abrir_gestion_usuarios(self):
-        self.ventana_usuarios = AdminUsuarios(self.conexion)
+        self.ventana_usuarios = AdminUsuarios(self.coordinador)
         self.ventana_usuarios.show()
