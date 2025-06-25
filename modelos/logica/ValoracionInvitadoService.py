@@ -2,8 +2,8 @@ from modelos.dao.valoracionDAO import ValoracionDAO
 from modelos.vo.valoracionVO import ValoracionVO
 
 class ValoracionInvitadoService:
-    def __init__(self, conexion):
-        self.valoracion_dao = ValoracionDAO(conexion)
+    def __init__(self):
+        self.valoracion_dao = ValoracionDAO()  
 
     def enviar_valoracion(self, id_tapa, puntuacion, comentario):
         # Para invitados, no hay id_usuario, se puede poner None o 0

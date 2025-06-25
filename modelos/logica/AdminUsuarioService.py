@@ -2,8 +2,8 @@ from modelos.dao.usuarioDAO import UsuarioDAO
 from modelos.vo.usuarioVO import UsuarioVO
 
 class AdminUsuarioService:
-    def __init__(self, conexion):
-        self.usuario_dao = UsuarioDAO(conexion)
+    def __init__(self):
+        self.usuario_dao = UsuarioDAO()  
 
     def obtener_todos_los_usuarios(self):
         """

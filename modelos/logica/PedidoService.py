@@ -1,12 +1,10 @@
-# modelos/logica/PedidoService.py
-
 from modelos.vo.pedidoVO import PedidoVO
 from modelos.dao.pedidoDAO import PedidoDAO
 
 class PedidoService:
-    def __init__(self, conexion):
-        self.pedido_dao = PedidoDAO(conexion)
-
+    def __init__(self):
+        self.pedido_dao = PedidoDAO() 
+        
     def crear_pedido(self, id_usuario, id_tapa, cantidad):
         pedido = PedidoVO(id_usuario=id_usuario, id_tapa=id_tapa, cantidad=cantidad)
         pedido_id = self.pedido_dao.insertar_pedido(pedido)

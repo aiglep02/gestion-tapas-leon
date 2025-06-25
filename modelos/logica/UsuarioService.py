@@ -9,16 +9,10 @@ from modelos.dao.usuarioDAO import UsuarioDAO
 from modelos.vo.usuarioVO import UsuarioVO
 
 class UsuarioService:
-    def __init__(self, conexion):
-        self.conexion = conexion
-        self.usuario_dao = UsuarioDAO(self.conexion)
-
+    def __init__(self):
+        self.usuario_dao = UsuarioDAO() 
+        
     def verificar_credenciales(self, email, contrasena, rol_ingresado):
-        """
-        Verifica si las credenciales son válidas y el rol coincide.
-        Devuelve una tupla: (UsuarioVO, None) si todo está bien,
-                            (None, mensaje_de_error) si hay fallo.
-        """
         usuario_vo = self.usuario_dao.verificar_credenciales(email, contrasena)
 
         if usuario_vo is None:
@@ -33,10 +27,6 @@ class UsuarioService:
         return usuario_vo, None
 
     def registrar_usuario(self, nombre, email, contrasena, confirmar):
-        """
-        Registra un nuevo usuario tras validaciones y verificación por correo.
-        Devuelve None si fue exitoso, o un mensaje de error si algo falla.
-        """
         if not nombre or not email or not contrasena or not confirmar:
             return "Todos los campos son obligatorios."
 
@@ -77,7 +67,7 @@ class UsuarioService:
 
         try:
             self.usuario_dao.insertar_usuario(usuario_vo, hash_contrasena)
-            return None  # Éxito
+            return None
         except Exception as e:
             return f"⚠️ Error: {str(e)}"
 

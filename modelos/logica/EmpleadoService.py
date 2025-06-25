@@ -2,9 +2,9 @@ from modelos.dao.pedidoDAO import PedidoDAO
 from modelos.dao.tapaDAO import TapaDAO
 
 class EmpleadoService:
-    def __init__(self, conexion):
-        self.pedido_dao = PedidoDAO(conexion)
-        self.tapa_dao = TapaDAO(conexion)
+    def __init__(self):
+        self.pedido_dao = PedidoDAO()  
+        self.tapa_dao = TapaDAO()
 
     def obtener_pedidos_pendientes(self):
         return self.pedido_dao.obtener_pedidos_pendientes()

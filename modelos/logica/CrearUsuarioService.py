@@ -3,9 +3,9 @@ import hashlib
 from modelos.dao.usuarioDAO import UsuarioDAO
 
 class CrearUsuarioService:
-    def __init__(self, conexion):
-        self.usuario_dao = UsuarioDAO(conexion)
-
+    def __init__(self):
+        self.usuario_dao = UsuarioDAO()  
+        
     def crear_usuario(self, nombre, email, contrasena, rol):
         # Validaciones básicas
         if not nombre or not email or not contrasena or not rol:

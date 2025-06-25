@@ -2,8 +2,8 @@ from modelos.dao.tapaDAO import TapaDAO
 from modelos.vo.EstadisticaVO import EstadisticaVO
 
 class EstadisticaService:
-    def __init__(self, conexion):
-        self.tapa_dao = TapaDAO(conexion) 
+    def __init__(self):
+        self.tapa_dao = TapaDAO()  
 
     def obtener_estadisticas(self):
         estadisticas_crudas = self.tapa_dao.obtener_datos_para_estadisticas()

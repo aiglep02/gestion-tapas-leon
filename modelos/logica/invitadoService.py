@@ -1,13 +1,11 @@
-# modelos/logica/InvitadoService.py
-
 from modelos.dao.tapaDAO import TapaDAO
 from modelos.dao.pedidoDAO import PedidoDAO
 from modelos.vo.pedidoVO import PedidoVO
 
 class InvitadoService:
-    def __init__(self, conexion):
-        self.tapa_dao = TapaDAO(conexion)
-        self.pedido_dao = PedidoDAO(conexion)
+    def __init__(self):
+        self.tapa_dao = TapaDAO()  
+        self.pedido_dao = PedidoDAO()
 
     def obtener_tapas_disponibles(self):
         """

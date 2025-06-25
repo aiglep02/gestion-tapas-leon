@@ -3,9 +3,9 @@ from modelos.dao.pedidoDAO import PedidoDAO
 from modelos.vo.pedidoVO import PedidoVO
 
 class ClienteService:
-    def __init__(self, conexion):
-        self.tapa_dao = TapaDAO(conexion)
-        self.pedido_dao = PedidoDAO(conexion)
+    def __init__(self):
+        self.tapa_dao = TapaDAO()  # ✅ DAO maneja su conexión
+        self.pedido_dao = PedidoDAO()
 
     def obtener_tapas_disponibles(self):
         """

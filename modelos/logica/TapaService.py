@@ -1,11 +1,9 @@
 from modelos.dao.tapaDAO import TapaDAO
-from modelos.ConexionJDBC import conectar
 
 class TapaService:
-    def __init__(self, conexion=None):
-        # Permite inyectar conexión desde fuera, útil para testing o controladores
-        self.dao = TapaDAO(conexion if conexion else conectar())
-
+    def __init__(self):
+        self.dao = TapaDAO()  
+        
     def obtener_todas_las_tapas(self):
         return self.dao.obtener_todas_las_tapas()
 
