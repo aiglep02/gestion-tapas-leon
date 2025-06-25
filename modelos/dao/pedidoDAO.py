@@ -1,8 +1,9 @@
+from modelos.ConexionJDBC import conectar
 from modelos.vo.pedidoVO import PedidoVO
 
 class PedidoDAO:
-    def __init__(self, conexion):
-        self.conn = conexion
+    def __init__(self):
+        self.conn = conectar()
 
     def insertar_pedido(self, pedidoVO):
         try:

@@ -1,9 +1,11 @@
+from modelos.ConexionJDBC import conectar
+
 from modelos.vo.tapaVO import TapaVO
 from modelos.vo.EstadisticaVO import EstadisticaVO
 
 class TapaDAO:
-    def __init__(self, conexion):
-        self.conn = conexion
+    def __init__(self):
+        self.conn = conectar()
 
     def obtener_todas_las_tapas(self):
         try:

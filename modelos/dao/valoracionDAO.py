@@ -1,8 +1,10 @@
+
+from modelos.ConexionJDBC import conectar
 from modelos.vo.valoracionVO import ValoracionVO
 
 class ValoracionDAO:
-    def __init__(self, conexion):
-        self.conn = conexion
+    def __init__(self):
+        self.conn = conectar()
 
     def insertar_valoracion(self, valoracionVO):
         try:

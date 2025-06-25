@@ -1,9 +1,10 @@
+from modelos.ConexionJDBC import conectar
 import hashlib
 from modelos.vo.usuarioVO import UsuarioVO
 
 class UsuarioDAO:
-    def __init__(self, conexion):
-        self.db = conexion
+    def __init__(self):
+        self.db = conectar()
 
     def verificar_credenciales(self, email, contrasena):
         contrasena_hash = hashlib.sha256(contrasena.encode()).hexdigest()
