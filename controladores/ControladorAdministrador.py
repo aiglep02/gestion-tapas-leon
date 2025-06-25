@@ -2,9 +2,8 @@ from modelos.logica.AdministradorService import AdministradorService
 from modelos.vo.tapaVO import TapaVO
 
 class ControladorAdministrador:
-    def __init__(self, conexion):
-        self.logica = AdministradorService(conexion)
-
+    def __init__(self):
+        self.logica = AdministradorService()  
     def obtener_tapas(self):
         return self.logica.obtener_tapas()
 

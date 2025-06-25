@@ -1,8 +1,8 @@
 from modelos.logica.AdminUsuarioService import AdminUsuarioService
 
 class ControladorAdminUsuarios:
-    def __init__(self, conexion):
-        self.usuario_service = AdminUsuarioService(conexion)
+    def __init__(self):
+        self.usuario_service = AdminUsuarioService()  # ✅ Sin conexión
 
     def listar_usuarios(self):
         return self.usuario_service.obtener_todos_los_usuarios()

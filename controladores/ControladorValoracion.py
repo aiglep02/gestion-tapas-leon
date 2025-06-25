@@ -1,8 +1,8 @@
 from modelos.logica.ValoracionService import ValoracionService
 
 class ControladorValoracion:
-    def __init__(self, conexion): 
-        self.service = ValoracionService(conexion)
+    def __init__(self):
+        self.service = ValoracionService()  
 
     def obtener_tapas_entregadas(self, usuario_id):
         return self.service.obtener_tapas_entregadas(usuario_id)

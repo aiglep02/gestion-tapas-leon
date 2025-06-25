@@ -1,9 +1,8 @@
 from modelos.logica.TapaService import TapaService
-from modelos.ConexionJDBC import conectar
 
 class ControladorTapa:
     def __init__(self):
-        self.service = TapaService(conectar())
+        self.service = TapaService()  
 
     def obtener_tapas(self):
         return self.service.obtener_todas_las_tapas()

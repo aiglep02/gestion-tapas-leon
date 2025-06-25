@@ -2,8 +2,8 @@ from modelos.dao.tapaDAO import TapaDAO
 from modelos.vo.tapaVO import TapaVO
 
 class AdministradorService:
-    def __init__(self, conexion):
-        self.tapa_dao = TapaDAO(conexion)
+    def __init__(self):
+        self.tapa_dao = TapaDAO()  
 
     def obtener_tapas(self):
         return self.tapa_dao.obtener_todas_las_tapas()

@@ -1,9 +1,8 @@
 from modelos.logica.ClienteService import ClienteService
 
 class ControladorClienteRegistrado:
-    def __init__(self, conexion):
-        self.conexion = conexion
-        self.service = ClienteService(conexion)
+    def __init__(self):
+        self.service = ClienteService()  # ✅ Sin conexión
 
     def obtener_tapas_disponibles(self):
         """Devuelve la lista de tapas (id, nombre, stock)."""

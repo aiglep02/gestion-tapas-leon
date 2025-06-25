@@ -1,8 +1,8 @@
 from modelos.logica.UsuarioService import UsuarioService
 
 class ControladorRegistro:
-    def __init__(self,conexion):
-        self.usuario_service = UsuarioService(conexion)
+    def __init__(self):
+        self.usuario_service = UsuarioService() 
 
     def registrar_usuario(self, nombre, email, contrasena, confirmar):
         """

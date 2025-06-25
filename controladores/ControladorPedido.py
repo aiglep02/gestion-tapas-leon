@@ -1,10 +1,8 @@
-# controladores/ControladorPedido.py
-
 from modelos.logica.PedidoService import PedidoService
 
 class ControladorPedido:
-    def __init__(self, conexion):
-        self.service = PedidoService(conexion)
+    def __init__(self):
+        self.service = PedidoService()  
 
     def crear_pedido(self, id_usuario, id_tapa, cantidad):
         return self.service.crear_pedido(id_usuario, id_tapa, cantidad)
