@@ -1,4 +1,3 @@
-import re
 import hashlib
 import random
 import smtplib
@@ -10,8 +9,8 @@ from modelos.vo.usuarioVO import UsuarioVO
 
 class UsuarioService:
     def __init__(self):
-        self.usuario_dao = UsuarioDAO() 
-        
+        self.usuario_dao = UsuarioDAO()
+
     def verificar_credenciales(self, email, contrasena, rol_ingresado):
         usuario_vo = self.usuario_dao.verificar_credenciales(email, contrasena)
 
@@ -26,19 +25,7 @@ class UsuarioService:
 
         return usuario_vo, None
 
-    def registrar_usuario(self, nombre, email, contrasena, confirmar):
-        if not nombre or not email or not contrasena or not confirmar:
-            return "Todos los campos son obligatorios."
-
-        if contrasena != confirmar:
-            return "Las contraseñas no coinciden."
-
-        if not re.fullmatch(r"[a-zA-Z0-9_.+-]+@gmail\.com", email):
-            return "Introduce un correo electrónico válido."
-
-        if len(contrasena) < 8 or not re.search(r"[A-Za-z]", contrasena) or not re.search(r"[0-9]", contrasena):
-            return "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números."
-
+    def registrar_usuario(self, nombre, email, contrasena):
         if self.usuario_dao.email_existente(email):
             return "Ese email ya está registrado."
 
@@ -67,7 +54,7 @@ class UsuarioService:
 
         try:
             self.usuario_dao.insertar_usuario(usuario_vo, hash_contrasena)
-            return None
+            return None  # Éxito
         except Exception as e:
             return f"⚠️ Error: {str(e)}"
 
