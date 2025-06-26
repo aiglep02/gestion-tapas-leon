@@ -28,4 +28,4 @@ class ControladorRegistro:
             return "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números."
 
         # ✅ Una vez validado, se llama al Service
-        return self.usuario_service.registrar_usuario(nombre, email, contrasena, confirmar)
+        return self.usuario_service.registrar_usuario(nombre, email, contrasena)
